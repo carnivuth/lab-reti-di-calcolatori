@@ -22,16 +22,18 @@ int main(int argc, char* argv[]){
 		exit(2);
 	}int c;
    //main loop
-	do{
-        c=getc(stdin);
-        //controllo per non scrivere EOF
-        if(c!=EOF){
-        written=write(fd, &c,4);
-            if(written!=4){
+	written=write(fd, &c,4)
+	while(c!=EOF){
+		written=write(fd, &c,4);
+		if(written!=4){
 		    	perror("P0: errore nella scrittura sul file");
-			    exit(3);
-		    }
+			exit(3);
+		}
+        c=getc(stdin);
+       
+        
+       
         }
-    }while(c!=EOF);
+    }
 	close(fd);
 }
