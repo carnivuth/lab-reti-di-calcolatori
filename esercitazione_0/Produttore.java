@@ -15,14 +15,12 @@ public class Produttore {
 			System.exit(0);
 		}
 		
-		//System.out.println("Quante righe vuoi inserire?");
 		input = new BufferedReader(new InputStreamReader(System.in));
 			
 		FileWriter fout;
 		int val;
 		try {
 			fout = new FileWriter(args[0]);
-			//res = Integer.parseInt(in.readLine());
 			val = input.read();
 			while(val != -1) {	
 				fout.write(val);
@@ -32,11 +30,11 @@ public class Produttore {
 		} 
 		catch (NumberFormatException nfe) { 
 			nfe.printStackTrace(); 
-			System.exit(1); // uscita con errore, intero positivo a livello di sistema Unix
+			System.exit(1);
 		}
 	    catch (IOException e) { 
 			e.printStackTrace();
-			System.exit(2); // uscita con errore, intero positivo a livello di sistema Unix
+			System.exit(2);
 		}
 	}
 }
