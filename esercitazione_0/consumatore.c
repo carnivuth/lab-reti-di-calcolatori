@@ -39,9 +39,9 @@ int main(int argc, char* argv[]){
                                 j++;
                         }
                         i++;
-                }
-                TFilter[i]='\0';
+                }  
         }
+	  TFilter[i]='\0';
         
         //main loop
         c=getc(stdin);
