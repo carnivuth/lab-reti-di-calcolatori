@@ -8,6 +8,9 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		int variabile=System.lineSeparator().getBytes().length;
+		System.out.println(System.lineSeparator().toString());
+		System.out.println(variabile);
 		int pos=0;
 			/*try {
 				RandomAccessFile x= new RandomAccessFile("C:/Users/39320/eclipse-workspace/RetiEsercitazione1/src/Swap/ciao.txt", "rw");
@@ -50,24 +53,34 @@ public class Main {
 		
 		
 		int numLinee=0;
-		String stringa;
+		//String stringa;
 		int[] offsets= new int[20];
 		offsets[0]=0;
 		byte[] array= new byte[2];
 		try {
 			pos=0;
 			RandomAccessFile x= new RandomAccessFile("C:/Users/39320/eclipse-workspace/RetiEsercitazione1/src/Swap/ciao.txt", "rw");
-			while (x.read(array, 0, 1)>0) {
+			/*while (x.read(array, 0, 1)>0) {
 				stringa=new String(array, "UTF-8");
 				System.out.print(stringa.charAt(0)); //I print all the file char for char
 				pos++; //numero di caratteri per linea
-				if (stringa.charAt(0)=='\n') {
+				if (stringa.charAt(0)==System.lineSeparator().getBytes()) {
 					numLinee++;
 					offsets[numLinee]=pos; //salvo gli offset
 					//pos=0;
 				}
+			}*/
+			
+			numLinee++;
+			String strtmp;
+			int sum=0;
+			while((strtmp=x.readLine())!=null) {
+				System.out.println(strtmp);
+				sum=sum+strtmp.length()+variabile;
+				offsets[numLinee]=sum;
+				numLinee++;
 			}
-			offsets[numLinee+1]=pos;
+			System.out.println("");
 			
 			
 			int linea1=1;
@@ -111,24 +124,31 @@ public class Main {
 					//forse bisogna scrivere anche lo /n
 				
 				//char aCapo=System.lineSeparator().getBytes();
-				posizione=offsets[linea1]-differenza+1; //perchè ho swappato le linee e devo scrivere a partire dalla fine della seconda
+				posizione=offsets[linea1]-differenza; //perchè ho swappato le linee e devo scrivere a partire dalla fine della seconda
 				lineaAttuale++;
 				while(lineaAttuale<linea2) {
 					x.seek((long)offsets[lineaAttuale-1]);
-					x.read(b, 0/*offsets[lineaAttuale-1]*/, offsets[lineaAttuale]-offsets[lineaAttuale-1]);
+					strtmp=x.readLine();
+					System.out.println("Ho letto: "+strtmp);
+					x.seek(posizione);
+					x.writeBytes(strtmp);
+					//x.writeChars(strtmp);
+					x.write(System.lineSeparator().getBytes(), 0, System.lineSeparator().getBytes().length);
+					
+					/*x.read(b, 0, offsets[lineaAttuale]-offsets[lineaAttuale-1]);
 					String tmp=new String(b, "UTF-8");
 					System.out.println("Ho letto: "+tmp);
 					x.seek(posizione);
-					x.write(b, 0/*posizione*/, offsets[lineaAttuale]-offsets[lineaAttuale-1]);
-					//idem forse va scritto anche /n
+					x.write(b, 0, offsets[lineaAttuale]-offsets[lineaAttuale-1]);
+					*/
 					posizione=posizione+(offsets[lineaAttuale]-offsets[lineaAttuale-1]);
 					lineaAttuale++;
 				}
-				System.exit(1);
 				
-				x.write(stringa1.getBytes(), offsets[linea2]-differenza, stringa1.getBytes().length);
-					//forse bisogna scrivere anche lo /n
 				
+				x.write(stringa1.getBytes(), 0, stringa1.getBytes().length);
+					
+				//System.exit(1);
 				
 				
 				
@@ -157,4 +177,3 @@ public class Main {
 	}
 
 }
-
