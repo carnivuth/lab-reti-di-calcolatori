@@ -35,32 +35,36 @@ public class RowSwapThread extends Thread{
 			ByteArrayInputStream biStream = new ByteArrayInputStream(buff);
 			DataInputStream diStream = new DataInputStream(biStream);
 			LineUtility lu = new LineUtility();
-			
-			sock.receive(packet);
-			String risposta = diStream.readUTF();
-			System.out.println("risposta: "+risposta);
-		/*	
-			String[] lines = risposta.split(":");
-
-			String firstLine = lu.getLine(nomeFile, Integer.parseInt(lines[0]));
-			String secondLine = lu.getLine(nomeFile, Integer.parseInt(lines[1]));
-			
-			if (firstLine.equals("Linea non trovata") || secondLine.equals("Linea non trovata")) {
-				System.err.println("Linee non trovate");
-				System.exit(3);
+			//ciclo infinito di attersa
+			while(true) {
+				//attendo richiseta client
+				sock.receive(packet);
+				//leggo risposta
+				String risposta = diStream.readUTF();
+				String[] lines = risposta.split(":");
+				//conversione linee da scambiare
+				int Linea1=Integer.parseInt(lines[0]);
+				int Linea2=Integer.parseInt(lines[1]);
+				
+				/*
+				if (firstLine.equals("Linea non trovata") || secondLine.equals("Linea non trovata")) {
+				
+					System.err.println("Linee non trovate");
+					System.exit(3);
+				}
+				
+				BufferedReader fileStream = new BufferedReader(new FileReader(new File(nomeFile)));
+				PrintWriter pw = new PrintWriter(new File(nomeFile));
+				
+				for (int i=0; i<Integer.parseInt(lines[0]) - 1; i++) {
+					
+					fileStream.readLine();
+					fileStream.skip
+				}*/
 			}
-			
-			BufferedReader fileStream = new BufferedReader(new FileReader(new File(nomeFile)));
-			PrintWriter pw = new PrintWriter(new File(nomeFile));
-			for (int i=0; i<Integer.parseInt(lines[0]) - 1; i++) {
-				fileStream.readLine();
-				fileStream.skip
-			}
-			*/
-			
-		} catch (SocketException e) {
+		}catch(SocketException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		}catch(IOException e) {
 			e.printStackTrace();
 		}
 		
