@@ -18,14 +18,14 @@ public class TestRandomAccessFile {
 		String stringa2;
 		int str1Length;
 		int str2Length;
-		int linea1=1;
-		int linea2=5;
+		int linea1=2;
+		int linea2=3;
 		stringa1="";stringa2="";
 		str1Length=0; str2Length=0;
 		
 		try {
 		
-			RandomAccessFile FReaderWriter= new RandomAccessFile(("C:\\Users\\matti\\Documents\\GitHub\\lab-reti-di-calcolatori\\prova.txt", "rw");
+			RandomAccessFile FReaderWriter= new RandomAccessFile("C:\\Users\\matti\\Documents\\GitHub\\lab-reti-di-calcolatori\\prova.txt", "rw");
 			numLinee++;
 			String strtmp;
 			
@@ -52,6 +52,7 @@ public class TestRandomAccessFile {
 			if(stringa1=="" || stringa2=="")System.exit(-1);
 				//calcolo differenza tra le stringhe
 				int differenza=(str1Length>str2Length)?str1Length-str2Length:str2Length-str1Length;
+
 				////////////hardcoding delle linee per debug
 				linea1=1;
 				linea2=3;
@@ -109,13 +110,14 @@ public class TestRandomAccessFile {
 					FReaderWriter.write(stringa2.getBytes(), 0,str2Length);
 					
 					//ciclo di riscrittura del file (sezione linea1-linea2)
-					while(FReaderWriter.getFilePointer()<(long)offsets[LINEA_2]+differenza) {
-						FReaderWriter.read(buffer2, 0, differenza);
+					while(FReaderWriter.getFilePointer()<(long)offsets[LINEA_2]) {
+						FReaderWriter.read(buffer2, 0,differenza);
 						FReaderWriter.seek(FReaderWriter.getFilePointer()-differenza);
 						FReaderWriter.write(buffer1, 0,differenza);
 						buffer1=Arrays.copyOf(buffer2, buffer2.length);
 						
 					}
+					FReaderWriter.write(buffer1, 0,(int)(offsets[LINEA_2]+differenza-FReaderWriter.getFilePointer()));
 					
 				
 				
