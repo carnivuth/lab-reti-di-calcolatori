@@ -34,7 +34,6 @@ public class RowSwapThread extends Thread{
 			DataOutputStream doStream = new DataOutputStream(boStream);
 			ByteArrayInputStream biStream = new ByteArrayInputStream(buff);
 			DataInputStream diStream = new DataInputStream(biStream);
-			LineUtility lu = new LineUtility();
 			//ciclo infinito di attersa
 			while(true) {
 				//attendo richiseta client
@@ -97,14 +96,14 @@ public class RowSwapThread extends Thread{
 							lineaAttuale=linea1;
 							//mi posiziono all'inizio della prima linea
 							FReaderWriter.seek((long)offsets[LINEA_1]);
-							//e ci scrivo la seconda (perchè appunto vanno scambiate)
+							//e ci scrivo la seconda (perchÃ¨ appunto vanno scambiate)
 							FReaderWriter.write(stringa2.getBytes(), 0, str2Length);
 							FReaderWriter.write(System.lineSeparator().getBytes(), 0, LSLength);
 							//avendo scritto la seconda linea sovrascrivendo la prima
-							//ed essendo la seconda più piccola, ho alcuni caratteri rimasti
+							//ed essendo la seconda piÃ¹ piccola, ho alcuni caratteri rimasti
 							//quindi mi posiziono all'inizio di questi caratteri
-							//tutto ciò è memorizzato in posizione, che di volta in volta verrà incrementata
-							//così sposto man mano indietro di alcuni caratteri (cioè della differenza tra le due stringhe)
+							//tutto ciÃ² Ã¨ memorizzato in posizione, che di volta in volta verrÃ  incrementata
+							//cosÃ¬ sposto man mano indietro di alcuni caratteri (cioÃ¨ della differenza tra le due stringhe)
 							//tutte le linee
 							posizione=(long)(offsets[LINEA_1]+str1Length+LSLength-differenza);
 							lineaAttuale++;
