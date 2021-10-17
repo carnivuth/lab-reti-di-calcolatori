@@ -1,3 +1,5 @@
+package Swap;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -9,7 +11,8 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 public class DiscoveryServer {
-	final static String COMPLETE_PATH = "D:\\OneDrive - Alma Mater Studiorum Università di Bologna\\Sync\\Reti_Calcolatori\\Java\\Esercitazione1\\src\\";
+
+	final static String COMPLETE_PATH = "D:\\OneDrive - Alma Mater Studiorum Universita' di Bologna\\Sync\\Reti_Calcolatori\\Java\\Esercitazione1\\src\\";
 
 	public static void main(String[] args) {
 		
@@ -23,7 +26,7 @@ public class DiscoveryServer {
 		File chkFile;
 		for (int i=0; i<((args.length)-1)/2; i++) {
 			if (!args[2*i + 2].matches("\\d+")) {
-				System.err.println("La porta del " + i + " file non è un numero");
+				System.err.println("La porta del " + i + " file non e' un numero");
 				System.exit(4);
 			}
 			chkFile = new File(COMPLETE_PATH+args[2*i + 1]);
@@ -43,6 +46,8 @@ public class DiscoveryServer {
 		
 		try {
 			//setup
+			//metto il server in ascolto sulla porta
+			// ecreo il pacchetto
 			DatagramSocket sock = new DatagramSocket(Integer.parseInt(args[0]));
 			byte[] buff = new byte[256];
 			DatagramPacket packet = new DatagramPacket(buff, buff.length);
@@ -68,6 +73,8 @@ public class DiscoveryServer {
 			//main loop
 			while(true) {
 				System.out.println("waiting for packets...");
+				//buff=new byte[256];
+				packet.setData(buff);
 				sock.receive(packet);
 				String nomeFileTarget = diStream.readUTF();
 				System.out.println("file richiesto: "+ nomeFileTarget);
@@ -79,7 +86,8 @@ public class DiscoveryServer {
 						doStream.writeUTF(Integer.toString(ports[i])); //meglio lasciarle come stringhe al posto che interi
 						//si suppone che mittente e destinatario si invertano in automatico
 						buff = boStream.toByteArray();
-						packet.setData(buff,0,boStream.size());
+						//packet.setData(buff,0,boStream.size());
+						packet.setData(buff);
 						sock.send(packet);
 					}
 				}
@@ -88,17 +96,16 @@ public class DiscoveryServer {
 					sock.send(packet);
 				}
 				
+				
 			}
-			
 			
 		} catch (SocketException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
-		
+	
 		
 	}
+
 }
