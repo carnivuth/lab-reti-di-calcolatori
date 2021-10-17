@@ -73,12 +73,26 @@ public class DiscoveryServer {
 			//main loop
 			while(true) {
 				System.out.println("waiting for packets...");
-				//buff=new byte[256];
+				buff=new byte[256];
+				 boStream = new ByteArrayOutputStream();
+				 doStream = new DataOutputStream(boStream);
+				 biStream = new ByteArrayInputStream(buff);
+				 diStream = new DataInputStream(biStream);
+				
+				
 				packet.setData(buff);
 				sock.receive(packet);
 				String nomeFileTarget = diStream.readUTF();
 				System.out.println("file richiesto: "+ nomeFileTarget);
 				boolean found = false;
+				
+				buff=new byte[256];
+				packet.setData(buff);
+				 boStream = new ByteArrayOutputStream();
+				 doStream = new DataOutputStream(boStream);
+				 biStream = new ByteArrayInputStream(buff);
+				 diStream = new DataInputStream(biStream);
+				
 				for (int i=0; i<files.length && !found; i++) {
 					if (files[i].equals(nomeFileTarget)) {
 						found = true;
@@ -93,6 +107,9 @@ public class DiscoveryServer {
 				}
 				if(!found) {
 					doStream.writeUTF("file non presente");
+					buff = boStream.toByteArray();
+					//packet.setData(buff,0,boStream.size());
+					packet.setData(buff);
 					sock.send(packet);
 				}
 				

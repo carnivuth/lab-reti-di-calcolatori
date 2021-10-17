@@ -105,51 +105,59 @@ public class RowSwapThread extends Thread {
   }
   }
   public static boolean swapper(int riga1, int riga2, String nome) throws IOException {
-    String r1;
-    String result1 = null, result2 = null;
-    String tmp1 = null, tmp2 = null;
-    StringJoiner sj = new StringJoiner(System.lineSeparator());
-    int i = 0;
-    BufferedReader in = null;
+	    String r1;
+	    String result1 = null, result2 = null;
+	    String tmp1 = null, tmp2 = null;
+	    StringJoiner sj = new StringJoiner(System.lineSeparator());
+	    int i = 0;
+	    BufferedReader in = null;
 
-    System.out.println("nome file: "+nome);
-    in = ReadFile(nome);
-    
-    //cosi' non ciclo tutto il file
-    while ((r1 = in .readLine()) != null || (result2 == null && result1 == null) ) {
-      i++;
-      if (riga1 == i) {
-        result1 = r1;
-      } else if (riga2 == i) {
-        result2 = r1;
-      }
-    } in.close();
+	    System.out.println("nome file: "+nome);
+	    in = ReadFile(nome);
+	    
+	    //cosi' non ciclo tutto il file
+	    while ((r1 = in .readLine()) != null || (result2 == null && result1 == null) ) {
+	      i++;
+		if (r1.isEmpty() || ("".equals(r1))) System.out.println("Trovato l'errore! riga: "+i);
+		System.out.println("Riga letta dallo swapper: "+i+" : "+r1);
+	      if (riga1 == i) {
+	        result1 = r1;
+	      } else if (riga2 == i) {
+	        result2 = r1;
+	      }
+	    } in.close();
+		if(i<riga1 || i< riga2) { 
+	    	System.out.println("Linea errata, guasto, pericolo!");
+	    	return false;
+	    }
 
-    in = ReadFile(nome);
-    i = 0;
-    while ((r1 = in .readLine()) != null) {
-      i++;
-      if (riga1 == i) {
-        //System.out.println("Scrivo " + result2);
-        if (result2 != null) sj.add(result2);
-        tmp1 = result2;
-      } else if (riga2 == i) {
-        //System.out.println("Scrivo " + result1);
-        if (result1 != null) sj.add(result1);
-        tmp2 = result1;
-      } else sj.add(r1);
-    } in .close();
-    FileWriter fileWriter = new FileWriter(nome);
-    PrintWriter printWriter = new PrintWriter(fileWriter); 
-    //System.out.println("Riga " + riga1 + " = " + result1 + "\nRiga " + riga2 + " = " + result2);
-    //System.out.println("tmp = " + tmp1 + " tmp2 = " + tmp2);
+	    in = ReadFile(nome);
+	    i = 0;
+	    while ((r1 = in .readLine()) != null) {
+	      i++;
+		if (r1.isEmpty() || ("".equals(r1))) System.out.println("Trovato l'errore! riga: "+i);
+		System.out.println("Riga letta dallo swapper: "+i+" : "+r1);
+	      if (riga1 == i) {
+	        //System.out.println("Scrivo " + result2);
+	        if (result2 != null) sj.add(result2);
+	        tmp1 = result2;
+	      } else if (riga2 == i) {
+	        //System.out.println("Scrivo " + result1);
+	        if (result1 != null) sj.add(result1);
+	        tmp2 = result1;
+	      } else sj.add(r1);
+	    } in .close();
+	    FileWriter fileWriter = new FileWriter(nome);
+	    PrintWriter printWriter = new PrintWriter(fileWriter); 
+	    //System.out.println("Riga " + riga1 + " = " + result1 + "\nRiga " + riga2 + " = " + result2);
+	    //System.out.println("tmp = " + tmp1 + " tmp2 = " + tmp2);
 
-//    System.out.println(sj.toString());
-    printWriter.print(sj.toString());
-    printWriter.close();
-    return (result1.equals(tmp2) && result2.equals(tmp1));
+//	    System.out.println(sj.toString());
+	    printWriter.print(sj.toString());
+	    printWriter.close();
+	    return (result1.equals(tmp2) && result2.equals(tmp1));
 
-  }
+	  }
   public static BufferedReader ReadFile(String path) {
     BufferedReader in = null;
     try {
