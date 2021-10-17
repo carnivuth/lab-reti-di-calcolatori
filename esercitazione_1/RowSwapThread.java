@@ -1,5 +1,4 @@
-package Swap;
-
+package swap
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,11 +12,10 @@ import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.StringJoiner;
+
 
 public class RowSwapThread extends Thread {
-  final static String COMPLETE_PATH = "D:\\OneDrive - Alma Mater Studiorum Universita' di Bologna\\Sync\\Reti_Calcolatori\\Java\\Esercitazione1\\src\\";
- 
+  final static String COMPLETE_PATH = "";//path to file system
   private int port;
   private String nomeFile;
   
@@ -101,14 +99,16 @@ public class RowSwapThread extends Thread {
 	} catch (IOException e) {
 		System.out.println("Errore nell'invio del messaggio di esito al client");
 		e.printStackTrace();
+		sock.close();
 	}
   }
   }
-  public static boolean swapper(int riga1, int riga2, String nome) throws IOException {
+  public boolean swapper(int riga1, int riga2, String nome) throws IOException {
 	    String r1;
 	    String result1 = null, result2 = null;
 	    String tmp1 = null, tmp2 = null;
-	    StringJoiner sj = new StringJoiner(System.lineSeparator());
+	    FileWriter fwTmp = new FileWriter("tmp"+this.port+".txt");
+	    PrintWriter pwTmp = new PrintWriter(fwTmp);
 	    int i = 0;
 	    BufferedReader in = null;
 
@@ -118,7 +118,6 @@ public class RowSwapThread extends Thread {
 	    //cosi' non ciclo tutto il file
 	    while ((r1 = in .readLine()) != null || (result2 == null && result1 == null) ) {
 	      i++;
-		if (r1.isEmpty() || ("".equals(r1))) System.out.println("Trovato l'errore! riga: "+i);
 		System.out.println("Riga letta dallo swapper: "+i+" : "+r1);
 	      if (riga1 == i) {
 	        result1 = r1;
@@ -128,6 +127,7 @@ public class RowSwapThread extends Thread {
 	    } in.close();
 		if(i<riga1 || i< riga2) { 
 	    	System.out.println("Linea errata, guasto, pericolo!");
+	    	pwTmp.close();
 	    	return false;
 	    }
 
@@ -139,21 +139,27 @@ public class RowSwapThread extends Thread {
 		System.out.println("Riga letta dallo swapper: "+i+" : "+r1);
 	      if (riga1 == i) {
 	        //System.out.println("Scrivo " + result2);
-	        if (result2 != null) sj.add(result2);
+	        if (result2 != null) pwTmp.println(result2);
 	        tmp1 = result2;
 	      } else if (riga2 == i) {
 	        //System.out.println("Scrivo " + result1);
-	        if (result1 != null) sj.add(result1);
+	        if (result1 != null) pwTmp.println(result1);
 	        tmp2 = result1;
-	      } else sj.add(r1);
-	    } in .close();
+	      } else pwTmp.println(r1);
+	    } 
+	    in .close();
+	    pwTmp.close();
+	     
 	    FileWriter fileWriter = new FileWriter(nome);
 	    PrintWriter printWriter = new PrintWriter(fileWriter); 
-	    //System.out.println("Riga " + riga1 + " = " + result1 + "\nRiga " + riga2 + " = " + result2);
-	    //System.out.println("tmp = " + tmp1 + " tmp2 = " + tmp2);
-
-//	    System.out.println(sj.toString());
-	    printWriter.print(sj.toString());
+	    in = ReadFile("tmp"+this.port+".txt");
+	  
+	    //ciclo di sovrascrittura file origine
+	    while ((r1 = in.readLine()) != null  ) {
+	   
+	    	printWriter.println(r1);
+	    }
+	   
 	    printWriter.close();
 	    return (result1.equals(tmp2) && result2.equals(tmp1));
 
