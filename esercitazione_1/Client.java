@@ -147,8 +147,6 @@ public class Client {
 				secondLine=stdIn.readLine();
 				
 				System.out.println("Sono state inserite: "+firstLine+":"+secondLine);
-				//preparazione del pacchetto
-				//devo ricreare tutto perche' altrimenti si prende le cose vecchie
 				buf=new byte[256];
 				boStream = new ByteArrayOutputStream();
 				doStream = new DataOutputStream(boStream);
@@ -158,12 +156,9 @@ public class Client {
 				packet.setData(buf);
 				socket.send(packet);
 				
-				
-				//in fase di lettura devo di nuovo ricreare tutto altrimenti mi picchia
 				buf=new byte[256];
 				packet.setData(buf);
 				socket.receive(packet);
-				
 				biStream = new ByteArrayInputStream( packet.getData(),0,packet.getLength());
 				diStream = new DataInputStream(biStream);
 				String risposta = diStream.readUTF();
@@ -171,7 +166,6 @@ public class Client {
 				if (risposta.equals("riga non presente")) {
 					System.err.println("Riga non presente");
 				}
-				
 				System.out.println("Inserire la prima riga da swappare: ");
 			}
 		}
