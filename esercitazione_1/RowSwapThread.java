@@ -126,7 +126,7 @@ public class RowSwapThread extends Thread {
 	      }
 	    } in.close();
 		if(i<riga1 || i< riga2) { 
-	    	System.out.println("Linea errata, guasto, pericolo!");
+	    	System.out.println("Riga richiesta non presente.");
 	    	pwTmp.close();
 	    	return false;
 	    }
@@ -135,14 +135,11 @@ public class RowSwapThread extends Thread {
 	    i = 0;
 	    while ((r1 = in .readLine()) != null) {
 	      i++;
-		if (r1.isEmpty() || ("".equals(r1))) System.out.println("Trovato l'errore! riga: "+i);
-		System.out.println("Riga letta dallo swapper: "+i+" : "+r1);
+		System.out.println("Riga letta dallo swapper: "+ i +" : "+ r1);
 	      if (riga1 == i) {
-	        //System.out.println("Scrivo " + result2);
 	        if (result2 != null) pwTmp.println(result2);
 	        tmp1 = result2;
 	      } else if (riga2 == i) {
-	        //System.out.println("Scrivo " + result1);
 	        if (result1 != null) pwTmp.println(result1);
 	        tmp2 = result1;
 	      } else pwTmp.println(r1);
