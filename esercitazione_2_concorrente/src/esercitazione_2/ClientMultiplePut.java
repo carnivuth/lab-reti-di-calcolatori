@@ -1,10 +1,12 @@
 package esercitazione_2;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -20,7 +22,7 @@ public class ClientMultiplePut {
 		File [] files;
 		byte buffer[];
 		String directory=null;
-		DataInputStream cl=new DataInputStream(System.in);
+		BufferedReader cl=new BufferedReader(new InputStreamReader(System.in));
 		DataInputStream sockReader=null;
 		DataOutputStream sockWriter=null;
 		DataInputStream fileReader=null;
@@ -66,7 +68,7 @@ public class ClientMultiplePut {
 		
 		try {
 		
-			while((directory=cl.readUTF())!=null) {
+			while((directory=cl.readLine())!=null) {
 				
 				//caricamento lista di file presenti nella directory
 				files=(new File(directory)).listFiles();
