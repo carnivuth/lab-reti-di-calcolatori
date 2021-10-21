@@ -1,0 +1,100 @@
+package esercitazione_2;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+
+public class ClientHandler extends Thread {
+	
+	//dichiarazione dimensione buffer
+	public static int BUFF_DIM_S=500;
+	private Socket socket;
+	private DataOutputStream fileWriter;
+	private DataInputStream sockReader;
+	private DataOutputStream sockWriter;
+	
+	public ClientHandler(Socket socket) {
+		
+		this.socket=socket;
+		
+		try {
+			
+			//inizializzazione canali di comunicazione socket 
+			sockReader=new DataInputStream(socket.getInputStream());
+			sockWriter=new DataOutputStream(socket.getOutputStream());
+		
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public void run() {
+		
+		int fileLength;
+		int numFiles;
+		String fileName;
+		File file;
+		byte buffer[];
+		int readed=0;
+		buffer =new byte[BUFF_DIM_S];
+		
+		//algoritmica implementazione scambio file
+		try {
+			
+			while(!socket.isOutputShutdown()) {
+				
+				numFiles = sockReader.readInt();
+				
+				for(int i =0; i<numFiles;i++) {
+				
+					fileName = sockReader.readUTF();
+				
+					//controllo esistenza file nel File System del servitore
+					if((file = new File(fileName.trim())).createNewFile()) {
+						
+						//richiesta file al cliente
+						sockWriter.writeUTF("attiva");
+						fileLength=sockReader.readInt();
+						fileWriter=new DataOutputStream(new FileOutputStream(file));
+						
+						//ciclo di lettura/scrittura file
+						for(int j=0; j<fileLength;j+=readed) {
+							
+							readed=sockReader.read(buffer);
+							fileWriter.write(buffer);
+							
+						}
+						
+						fileWriter.close();
+						
+					}else {
+						
+						//segnalazione al cliente dell'esistenza del file nel File System del servitore
+						sockWriter.writeUTF("salta");
+					}
+				}
+		
+				socket.close();
+			}
+		
+		} catch (IOException e) {
+			
+			try {
+				
+				socket.close();
+			
+			} catch (IOException e1) {
+				
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+		
+	}
+	
+}
