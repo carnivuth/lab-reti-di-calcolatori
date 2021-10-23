@@ -49,7 +49,7 @@ public class ClientHandler extends Thread {
 			
 			while(!socket.isInputShutdown()) {
 				
-				System.out.println("leggo n-file cartella\n");
+				System.out.println("leggo numero file cartella\n");
 				
 				try {
 				
@@ -60,11 +60,13 @@ public class ClientHandler extends Thread {
 					//terminazione in caso di EOF inviato da client
 					System.out.println("comunicazione terminata\n");
 					socket.close();
+					return;
 				}
 				for(int i =0; i<numFiles;i++) {
 				
 					fileName = sockReader.readUTF();
 					System.out.println("file di nome "+fileName+" letto\n");
+					
 					//controllo esistenza file nel File System del servitore
 					if((file = new File(fileName.trim())).createNewFile()) {
 						

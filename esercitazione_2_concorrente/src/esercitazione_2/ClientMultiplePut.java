@@ -19,6 +19,7 @@ public class ClientMultiplePut {
 	//parametri di invocazione ip porta dimensione
 	public static void main(String args[]) {
 		
+		int numFilesToSend;
 		int port=0;
 		File [] files;
 		byte buffer[];
@@ -77,7 +78,7 @@ public class ClientMultiplePut {
 		}
 		
 		try {
-			
+		
 			System.out.println("inserire nome directory\n");
 			
 			while((directory=cl.readLine())!=null) {
@@ -85,14 +86,23 @@ public class ClientMultiplePut {
 				//caricamento lista di file presenti nella directory
 				files=(new File(directory)).listFiles();
 				
+				//calcolo numero file con dimensione maggiore di dimensione soglia
+				numFilesToSend=0;
+				
+				for (int i=0; i<files.length; i++){
+				
+					if(files[i].length()>=minimumSize)numFilesToSend++;
+				
+				}
+				
 				//invio numero di file directory
-				sockWriter.writeInt(files.length);
+				sockWriter.writeInt(numFilesToSend);
+				
 				
 				//ciclo scrittura file directory 
 				for(int i =0; i<files.length;i++) {
 					
-					//controllo sulla dimensione del file
-					if(files[i].getTotalSpace()>minimumSize) {
+					if(files[i].length()>=minimumSize) {
 					
 						//invio nome file a servitore 
 						System.out.println("invio nome file a servitore\n");
@@ -113,12 +123,12 @@ public class ClientMultiplePut {
 							}
 						
 						}else {
-							
-							//stampa messaggio di avviso presenza del file nel File System del servitore 
-							System.out.println("file: "+ files[i].getName() +" gia presente nel File System del servitore ");
+								
+								//stampa messaggio di avviso presenza del file nel File System del servitore 
+								System.out.println("file: "+ files[i].getName() +" gia presente nel File System del servitore ");
 						}
+						
 					}
-					
 				}
 				
 			}
