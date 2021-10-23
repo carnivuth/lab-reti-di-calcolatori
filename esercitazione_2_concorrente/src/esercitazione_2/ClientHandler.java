@@ -1,6 +1,7 @@
 package esercitazione_2;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class ClientHandler extends Thread {
 	public void run() {
 		
 		int fileLength;
-		int numFiles;
+		int numFiles=0;
 		String fileName;
 		File file;
 		byte buffer[];
@@ -46,11 +47,20 @@ public class ClientHandler extends Thread {
 		//algoritmica implementazione scambio file
 		try {
 			
-			while(!socket.isOutputShutdown()) {
+			while(!socket.isInputShutdown()) {
 				
 				System.out.println("leggo n-file cartella\n");
-				numFiles = sockReader.readInt();
 				
+				try {
+				
+					numFiles = sockReader.readInt();
+				
+				}catch(EOFException e) {
+					
+					//terminazione in caso di EOF inviato da client
+					System.out.println("comunicazione terminata\n");
+					socket.close();
+				}
 				for(int i =0; i<numFiles;i++) {
 				
 					fileName = sockReader.readUTF();
@@ -82,9 +92,10 @@ public class ClientHandler extends Thread {
 					}
 				}
 		
-				socket.close();
 			}
-		
+			
+			socket.close();
+			
 		} catch (IOException e) {
 			
 			try {
