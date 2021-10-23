@@ -16,6 +16,7 @@ public class ClientMultiplePut {
 	
 	public static final int BUFF_DIM_C=500;
 	
+	//parametri di invocazione ip porta dimensione
 	public static void main(String args[]) {
 		
 		int port=0;
@@ -28,10 +29,12 @@ public class ClientMultiplePut {
 		DataInputStream fileReader=null;
 		Socket socket = null;
 		buffer =new byte[BUFF_DIM_C];
+		int minimumSize=0;
 		
 		//conversione e controllo porta
 		try {
 			
+			minimumSize=Integer.parseInt(args[2]);
 			port= Integer.parseInt(args[1]); 
 			
 		}catch(NumberFormatException e) {
@@ -44,6 +47,13 @@ public class ClientMultiplePut {
 			
 			System.err.println("errore: inserire porta valida");
 			System.exit(-1);
+		}
+		
+		if (minimumSize<0) {
+		
+			System.err.println("errore: inserire dimensione valida");
+			System.exit(-1);
+		
 		}
 		
 		try {
@@ -67,35 +77,46 @@ public class ClientMultiplePut {
 		}
 		
 		try {
-		
+			
+			System.out.println("inserire nome directory\n");
+			
 			while((directory=cl.readLine())!=null) {
 				
 				//caricamento lista di file presenti nella directory
 				files=(new File(directory)).listFiles();
 				
+				//invio numero di file directory
+				sockWriter.writeInt(files.length);
+				
 				//ciclo scrittura file directory 
 				for(int i =0; i<files.length;i++) {
 					
-					//invio nome file a servitore 
-					sockWriter.writeUTF(files[i].getName());
+					//controllo sulla dimensione del file
+					if(files[i].getTotalSpace()>minimumSize) {
 					
-					//controllo presenza o meno del file nel File System del servitore 
-					if(sockReader.readUTF().equals("attiva")) {
-				
-						//apertura stream di lettura del file
-						fileReader=new DataInputStream(new FileInputStream(files[i]));
+						//invio nome file a servitore 
+						System.out.println("invio nome file a servitore\n");
+						sockWriter.writeUTF(files[i].getName());
 						
-						//ciclo di scrittura file su socket
-						while((fileReader.read(buffer))!=-1) {
+						//controllo presenza o meno del file nel File System del servitore 
+						if(sockReader.readUTF().equals("attiva")) {
+					
+							//apertura stream di lettura del file
+							System.out.println("file mancante invio in corso\n");
+							fileReader=new DataInputStream(new FileInputStream(files[i]));
 							
-							sockWriter.write(buffer);
+							//ciclo di scrittura file su socket
+							while((fileReader.read(buffer))!=-1) {
+								
+								sockWriter.write(buffer);
+								
+							}
+						
+						}else {
 							
+							//stampa messaggio di avviso presenza del file nel File System del servitore 
+							System.out.println("file: "+ files[i].getName() +" gia presente nel File System del servitore ");
 						}
-					
-					}else {
-						
-						//stampa messaggio di avviso presenza del file nel File System del servitore 
-						System.out.println("file: "+ files[i].getName() +" gia presente nel File System del servitore ");
 					}
 					
 				}

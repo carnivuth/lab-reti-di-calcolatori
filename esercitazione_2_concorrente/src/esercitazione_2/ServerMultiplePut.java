@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerMultiplePut {
+	
+	//parametri di invocazione porta
 	public static void main(String args[]) {
 		
 		ServerSocket sv;
@@ -36,8 +38,9 @@ public class ServerMultiplePut {
 			//ciclo demone
 			while(true) {
 				
-				//chiamata processo di gestione figlio
+				System.out.println("attesa client\n");
 				socket=sv.accept();
+				//chiamata processo di gestione figlio
 				ch=new ClientHandler(socket);
 				ch.start();
 				

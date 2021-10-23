@@ -48,21 +48,24 @@ public class ClientHandler extends Thread {
 			
 			while(!socket.isOutputShutdown()) {
 				
+				System.out.println("leggo n-file cartella\n");
 				numFiles = sockReader.readInt();
 				
 				for(int i =0; i<numFiles;i++) {
 				
 					fileName = sockReader.readUTF();
-				
+					System.out.println("file di nome "+fileName+" letto\n");
 					//controllo esistenza file nel File System del servitore
 					if((file = new File(fileName.trim())).createNewFile()) {
 						
 						//richiesta file al cliente
+						System.out.println("richiedo file\n");
 						sockWriter.writeUTF("attiva");
 						fileLength=sockReader.readInt();
 						fileWriter=new DataOutputStream(new FileOutputStream(file));
 						
 						//ciclo di lettura/scrittura file
+						System.out.println("scrivo file "+fileName+" \n");
 						for(int j=0; j<fileLength;j+=readed) {
 							
 							readed=sockReader.read(buffer);
