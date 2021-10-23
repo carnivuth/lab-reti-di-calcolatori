@@ -32,6 +32,13 @@ public class ClientMultiplePut {
 		buffer =new byte[BUFF_DIM_C];
 		int minimumSize=0;
 		
+		//controllo il numero degli argomenti
+		if(args.length!=3){
+				System.err.println("Errore nell'inserimento delgi argomenti");
+				System.out.println("Usage: java ClientMultiplePut IP port minimumSize");
+				System.exit(1);
+		}
+		
 		//conversione e controllo porta
 		try {
 			
