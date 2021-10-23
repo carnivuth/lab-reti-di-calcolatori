@@ -123,7 +123,9 @@ public class ClientMultiplePut {
 							fileReader=new DataInputStream(new FileInputStream(files[i]));
 							
 							//invio dimensione del file
-							sockWriter.writeLong(files[i].length());							//ciclo di scrittura file su socket
+							sockWriter.writeLong(files[i].length());							
+							
+							//ciclo di scrittura file su socket
 							while((fileReader.read(buffer))!=-1) {
 								
 								sockWriter.write(buffer);
