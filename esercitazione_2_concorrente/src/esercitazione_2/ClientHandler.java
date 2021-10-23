@@ -36,7 +36,7 @@ public class ClientHandler extends Thread {
 	
 	public void run() {
 		
-		int fileLength;
+		long fileLength;
 		int numFiles=0;
 		String fileName;
 		File file;
@@ -73,7 +73,7 @@ public class ClientHandler extends Thread {
 						//richiesta file al cliente
 						System.out.println("richiedo file\n");
 						sockWriter.writeUTF("attiva");
-						fileLength=sockReader.readInt();
+						fileLength=sockReader.readLong();
 						fileWriter=new DataOutputStream(new FileOutputStream(file));
 						
 						//ciclo di lettura/scrittura file

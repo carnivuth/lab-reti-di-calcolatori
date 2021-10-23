@@ -122,7 +122,8 @@ public class ClientMultiplePut {
 							System.out.println("file mancante invio in corso\n");
 							fileReader=new DataInputStream(new FileInputStream(files[i]));
 							
-							//ciclo di scrittura file su socket
+							//invio dimensione del file
+							sockWriter.writeLong(files[i].length());							//ciclo di scrittura file su socket
 							while((fileReader.read(buffer))!=-1) {
 								
 								sockWriter.write(buffer);
