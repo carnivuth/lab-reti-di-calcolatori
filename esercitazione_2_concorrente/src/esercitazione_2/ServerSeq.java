@@ -143,6 +143,7 @@ public class ServerSeq {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+					//chiudo la socket e continuo in modo da uscire dal ciclo in caso un client abbia terminato la sua esecuzione
 					continue;
 				}
 				System.out.println("Devo ricevere "+numFile+" file");
