@@ -97,14 +97,10 @@ public class ClientMultiplePut {
 				numFilesToSend=0;
 				
 				for (int i=0; i<files.length; i++){
-				
 					if(files[i].length()>=minimumSize)numFilesToSend++;
-				
 				}
-				
 				//invio numero di file directory
 				sockWriter.writeInt(numFilesToSend);
-				
 				
 				//ciclo scrittura file directory 
 				for(int i =0; i<files.length;i++) {
@@ -127,9 +123,7 @@ public class ClientMultiplePut {
 							
 							//ciclo di scrittura file su socket
 							while((fileReader.read(buffer))!=-1) {
-								
 								sockWriter.write(buffer);
-								
 							}
 						
 						}else {
