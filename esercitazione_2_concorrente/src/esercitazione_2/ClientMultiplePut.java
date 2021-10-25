@@ -14,13 +14,15 @@ import java.net.UnknownHostException;
 
 public class ClientMultiplePut {
 	
-	public static final int BUFF_DIM_C=500;
+	public static final int BUFF_DIM_C=64000;
+	public static final int DEFAULT_PORT=50000;
+	public static final int DEFAULT_MINIMUM_SIZE=0;
 	
-	//parametri di invocazione ip porta dimensione
+	//parametri di invocazione ip_server [porta] [dimensione]
 	public static void main(String args[]) {
 		
-		int numFilesToSend;
-		int port=0;
+		int numFilesToSend=0;
+		int port=DEFAULT_PORT;
 		File [] files;
 		byte buffer[];
 		String directory=null;
@@ -30,39 +32,50 @@ public class ClientMultiplePut {
 		DataInputStream fileReader=null;
 		Socket socket = null;
 		buffer =new byte[BUFF_DIM_C];
-		int minimumSize=0;
+		int minimumSize=DEFAULT_MINIMUM_SIZE;
+		
+
 		
 		//controllo il numero degli argomenti
-		if(args.length!=3){
+		if(args.length>3){
 				System.err.println("Errore nell'inserimento delgi argomenti");
 				System.out.println("Usage: java ClientMultiplePut IP port minimumSize");
 				System.exit(1);
 		}
 		
-		//conversione e controllo porta
-		try {
+		if(args.length==3) {
+		
+			//conversione e controllo porta
+			try {
+				
+				minimumSize=Integer.parseInt(args[2]);
+				port= Integer.parseInt(args[1]); 
+				
+			}catch(NumberFormatException e) {
+				
+				System.err.println("errore: inserire porta valida");
+				System.exit(-1);
+			}
+	
+			if(port<1024||port>65535) {
+				
+				System.err.println("errore: inserire porta valida");
+				System.exit(-1);
+			}
 			
-			minimumSize=Integer.parseInt(args[2]);
-			port= Integer.parseInt(args[1]); 
+		}else if(args.length==3) {
+				
+			if (minimumSize<0) {
+				
+					System.err.println("errore: inserire dimensione valida");
+					System.exit(-1);
+				
+			}
 			
-		}catch(NumberFormatException e) {
-			
-			System.err.println("errore: inserire porta valida");
-			System.exit(-1);
 		}
+			
+			
 
-		if(port<1024||port>65535) {
-			
-			System.err.println("errore: inserire porta valida");
-			System.exit(-1);
-		}
-		
-		if (minimumSize<0) {
-		
-			System.err.println("errore: inserire dimensione valida");
-			System.exit(-1);
-		
-		}
 		
 		try {
 			
@@ -71,7 +84,6 @@ public class ClientMultiplePut {
 			socket.connect(new InetSocketAddress(InetAddress.getByName(args[0]), port));
 			sockReader=new DataInputStream(socket.getInputStream());
 			sockWriter=new DataOutputStream(socket.getOutputStream());
-			
 		
 		} catch (UnknownHostException e1) {
 			
@@ -134,8 +146,8 @@ public class ClientMultiplePut {
 						
 						}else {
 								
-								//stampa messaggio di avviso presenza del file nel File System del servitore 
-								System.out.println("file: "+ files[i].getName() +" gia presente nel File System del servitore ");
+							//stampa messaggio di avviso presenza del file nel File System del servitore 
+							System.out.println("file: "+ files[i].getName() +" gia presente nel File System del servitore ");
 						}
 						
 					}

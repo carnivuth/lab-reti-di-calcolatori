@@ -10,7 +10,8 @@ import java.net.Socket;
 public class ClientHandler extends Thread {
 	
 	//dichiarazione dimensione buffer
-	public static int BUFF_DIM_S=500;
+	public static final String PATH_TO_OUTPUT="output\\";
+	public static final int BUFF_DIM_S=64000;
 	private Socket socket;
 	private DataOutputStream fileWriter;
 	private DataInputStream sockReader;
@@ -63,12 +64,13 @@ public class ClientHandler extends Thread {
 					return;
 				}
 				for(int i =0; i<numFiles;i++) {
-				
+					
+					
 					fileName = sockReader.readUTF();
 					System.out.println("file di nome "+fileName+" letto\n");
 					
 					//controllo esistenza file nel File System del servitore
-					if((file = new File(fileName.trim())).createNewFile()) {
+					if((file = new File(PATH_TO_OUTPUT+fileName.trim())).createNewFile()) {
 						
 						//richiesta file al cliente
 						System.out.println("richiedo file\n");
@@ -78,6 +80,8 @@ public class ClientHandler extends Thread {
 						
 						//ciclo di lettura/scrittura file
 						System.out.println("scrivo file "+fileName+" \n");
+						long timeStamp=System.currentTimeMillis();
+						
 						for(int j=0; j<fileLength;j+=readed) {
 							
 							readed=sockReader.read(buffer);
@@ -86,6 +90,7 @@ public class ClientHandler extends Thread {
 						}
 						
 						fileWriter.close();
+						System.out.println(System.currentTimeMillis()-timeStamp);
 						
 					}else {
 						

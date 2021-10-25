@@ -14,21 +14,27 @@ public class ServerMultiplePut {
 		ClientHandler ch;
 		int port=0;
 		
-		//controllo argomenti 
-		try {
+		if(args.length>1)System.exit(1);
+		if (args.length==0)port=50000;
 		
-			port= Integer.parseInt(args[0]); 
+		else {
 			
-		}catch(NumberFormatException e) {
+			//controllo argomenti 
+			try {
 			
-			System.err.println("errore: inserire porta valida");
-			System.exit(-1);
-		}
-		
-		if(port<1024||port>65535) {
+				port= Integer.parseInt(args[0]); 
+				
+			}catch(NumberFormatException e) {
+				
+				System.err.println("errore: inserire porta valida");
+				System.exit(-1);
+			}
 			
-			System.err.println("errore: inserire porta valida");
-			System.exit(-1);
+			if(port<1024||port>65535) {
+				
+				System.err.println("errore: inserire porta valida");
+				System.exit(-1);
+			}
 		}
 		
 		try {
