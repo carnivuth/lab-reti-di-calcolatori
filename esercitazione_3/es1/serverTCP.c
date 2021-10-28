@@ -208,6 +208,14 @@ int main(int argc, char* argv[]){ //args: port
 
 			while(recv(conn_sd, nomeFile, sizeof(nomeFile), 0)>0){
 
+				memset(buff,0,sizeof(buff));
+
+				
+
+				
+
+				charCounter=0;
+
 				//ricevo il file
 
 				printf("Ho ricevuto come file: %s\n", nomeFile);

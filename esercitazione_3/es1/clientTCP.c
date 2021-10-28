@@ -4,6 +4,12 @@
 
 #include <unistd.h>
 
+#include <signal.h>
+
+#include <errno.h>
+
+#include <fcntl.h>
+
 #include <sys/types.h>
 
 #include <sys/socket.h>
@@ -14,23 +20,43 @@
 
 #include <string.h>
 
-#include <fcntl.h>
+#include <sys/wait.h>
 
 
 
-int main(int argc, char* argv[]){ //args: ipServ portServ
+void gestore(int signo){
+
+  int status, pid;
+
+  printf("esecuzione gestore di SIGCHLD\n");
+
+  pid=wait(&status);
+
+if (WIFEXITED(status))
+
+	printf("Terminazione volontaria di %d con stato %d\n", pid, WEXITSTATUS(status));
+
+else if (WIFSIGNALED(status))
+
+	printf("Terminazione involontaria di %d per segnale %d\n", pid, WTERMSIG(status));
+
+}
+
+
+
+int main(int argc, char* argv[]){ //args: port
 
 	
 
-	struct hostent *host;
+	struct hostent *clienthost;
 
-	struct sockaddr_in serveraddr;
+	struct sockaddr_in clientaddr, serveraddr;
 
-	
+
 
 	//controllo argomenti
 
-	if (argc != 3){
+	if (argc != 2){
 
 		perror("Argomenti invalidi\n");
 
@@ -38,243 +64,235 @@ int main(int argc, char* argv[]){ //args: ipServ portServ
 
 	}
 
-
-
-	host = gethostbyname(argv[1]);
-
-	if (host == NULL){
-
-		perror("Host non presente in /etc/hosts\n");
-
-		exit(2);
-
-	}
-
-	int port = atoi(argv[2]);
+	int port = atoi(argv[1]);
 
 	if (port < 1024 || port > 65535){
 
 		perror("Porta invalida\n");
 
-		exit(3);
+		exit(2);
 
 	}
 
+	
 
+	//inizializzazione server
 
-	//inizialzzazione client e server	
-
-	memset((char *)&serveraddr, 0, sizeof(serveraddr));
+	memset((char*)&serveraddr, 0, sizeof(serveraddr));
 
 	serveraddr.sin_family = AF_INET;
 
-	serveraddr.sin_addr.s_addr = ((struct in_addr *)(host->h_addr))->s_addr;
+	serveraddr.sin_addr.s_addr = INADDR_ANY;
 
 	serveraddr.sin_port = htons(port);
 
 
 
-	//creazione socket
+	//creazione e settaggio socket ascolto
 
-	int sd = socket(AF_INET, SOCK_STREAM, 0); //???
+	int listen_sd = socket(AF_INET, SOCK_STREAM, 0);
 
-	if (sd<0){
+	if (listen_sd < 0){
 
-		perror("Errore di apertura socket\n");
+		perror("Errore creazione socket\n");
 
 		exit(2);
 
 	}
 
+	int on = 1;
 
+	if (setsockopt(listen_sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0){
 
-	//bind socket implicita nella connect
-
-	if (connect(sd,(struct sockaddr*)&serveraddr, sizeof(struct sockaddr))<0){
-
-		perror("Errore di binding (connect)\n");
+		perror("Errore di settaggio\n");
 
 		exit(3);
 
 	}
 
+	if (bind(listen_sd, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0){
 
+		perror("Errore di binding\n");
 
-	char nomeFile[256], buff[256];
+		exit(4);
 
-	int riga, ok, dim, fd, fd2;
+	}
 
-	char tmp;
+	if (listen(listen_sd, 5) < 0 ){
 
-	int len = sizeof(serveraddr);
+		perror("Errore creazione coda listen\n");
+
+		exit(5);
+
+	}
 
 	
 
-	printf("Inserisci nomeFile\n");
+	//gestisco i figli
 
-	while (scanf("%s",nomeFile) != EOF){
+	signal(SIGCHLD, gestore);
 
-		printf("Inserisci numero riga da eliminare\n");
 
-		while ((ok = scanf("%d",&riga)) != 1){ //numero dato male
 
-			scanf("%s",buff);
+	char buff[256];
 
-			printf("Inserisci numero riga da eliminare\n");
+	char nomeFile[256];
 
-		}
+	int riga, dim, pid;
 
-		
+	int curPort;
 
-		//controllo l'esistenza del file
+	char curIp[256];
 
-		if ((fd = open(nomeFile,O_RDONLY)) < 0){
+	int len = sizeof(clientaddr); //va bene fuori? cambianto i client può cambiare la dimensione?
 
-			printf("File non esistente \nInserisci nomeFile\n");
+	int conn_sd;
 
-			continue;
+	char tmp;
 
-		}
+	int lineCounter=0, charCounter=0;
 
+	while(1){
 
 
-		//conto la dimensione del file
 
-		dim=lseek(fd, 0, SEEK_END);
+		//arrivano: nomeFile, riga, dim, contenutoFile
 
-		lseek(fd, 0, SEEK_SET);
+		if ((conn_sd=accept(listen_sd, (struct sockaddr*)&clientaddr, &len))<0){
 
-		
+			if (errno==EINTR){
 
-		//invio il nome del file
+				perror("Forzo la continuaizone della accept\n");
 
-		if (sendto(sd, nomeFile, sizeof(nomeFile), 0, (struct sockaddr*)&serveraddr, len) <0){
+				continue;
 
-			perror("Errore di trasmissione\n");
+			}else{
 
-			exit(4);
+				perror("Errore accept\n");
 
-		}
-
-
-
-		//invio la riga da eliminare
-
-		if (sendto(sd, &riga, sizeof(riga), 0, (struct sockaddr*)&serveraddr, len) < 0){
-
-			perror("Errore di trasmissione\n");
-
-			exit(4);
-
-		}
-
-
-
-		//invio la dimensione del file
-
-		if (sendto(sd, &dim, sizeof(dim), 0, (struct sockaddr*)&serveraddr, len) < 0){
-
-			perror("Errore di trasmissione\n");
-
-			exit(4);
-
-		}
-
-		printf("Inviato nomeFile %s riga %d dim %d\n",nomeFile,riga,dim);
-
-		
-
-		//nome del file di appoggio = pid del client
-
-		char tmpFileName[20];
-
-		sprintf(tmpFileName, "%d.txt", getpid());
-
-		//apro un file su cui scrivere cio' che mi invia il server
-
-		if ((fd2 = open(tmpFileName, O_CREAT|O_RDWR, 0666)) < 0){
-
-			printf("Non reisco a creare il file di appoggio\n");
-
-			exit(5);
-
-		}
-
-
-
-		buff[0]='\0';
-
-		int countLinee=0;
-
-		int letti=0;
-
-		//lettura byte per byte
-
-		while(read(fd, &tmp, sizeof(char)) > 0){
-
-			//write(sd,&tmp,sizeof(tmp)); 
-
-			send(sd,&tmp,sizeof(tmp), 0);
-
-
-
-			if (tmp=='\n'){
-
-				 countLinee++;
-
-				 printf("Linea numero %d\n", countLinee);
-
-				if (countLinee!=riga){
-
-					//ricevo la riga e la scrivo
-
-					letti=recv(sd, buff, sizeof(buff), 0);
-
-					printf("\nHo ricevuto questa linea: %s\n", buff);
-
-					write(fd2, buff, letti);
-
-				}
+				exit(6);
 
 			}
 
 		}
 
-		close(fd2);
-
-		close(fd);
-
-		
-
-		//salvo le modifiche effettuate con una rinominazione del file
-
-		if (rename(tmpFileName, nomeFile)==0){
-
-			printf("File aggiornato con successo\n");
-
-		}
-
-		else {
-
-			printf("Il file NON e' stato aggiornato\n");
-
-		}
-
-		
-
-		printf("\nInserisci nomeFile\n");	
-
-	
-
-	}
-
-	shutdown(sd,1); //chiusura output, invio EOF al server
-
-	shutdown(sd,0);
-
-	close(sd);
 
 
+		if(fork()==0){
+
+			//figlio
+
+			clienthost = gethostbyaddr((char*)&clientaddr.sin_addr, sizeof(clientaddr.sin_addr), AF_INET);
+
+			if (clienthost == NULL){
+
+				printf("Client host information not found\n");
+
+				continue;
+
+			}else{
+
+				printf("Client servito: %s\n", clienthost->h_name);
+
+			}
+
+
+
+			close(0);
+
+			dup(conn_sd); //ridirezione input verso il client
+
+
+
+			//continuo l'esecuzione finche' ricevo il nome del file
+
+			while(recv(conn_sd, nomeFile, sizeof(nomeFile), 0)>0){
+
+				memset(buff,0,sizeof(buff));
+
+				
+
+				
+
+				charCounter=0;
+
+				//ricevo il file
+
+				printf("Ho ricevuto come file: %s\n", nomeFile);
+
+
+
+				//ricevo il numero della riga da elimincare
+
+				recv(conn_sd, &riga, sizeof(riga), 0);
+
+				printf("Ho ricevuto come riga: %d\n", riga);
+
+				
+
+				//ricevo la dimensione del file
+
+				recv(conn_sd, &dim, sizeof(riga), 0);
+
+				printf("Ho ricevuto come dim: %d\n", dim);
+
+
+
+				int i=0;
+
+				while(i<dim){
+
+					printf("Inizio a leggere il file\n");
+
+					tmp = getchar();
+
+					i++;
+
+					printf("letto: %c\n", tmp);
+
+					if (tmp == '\n'){
+
+						lineCounter++;
+
+						//chiudo la stringa e la invio
+
+						buff[charCounter]='\n';
+
+						if(lineCounter != riga){
+
+							send(conn_sd, buff, charCounter+1, 0);
+
+						}
+
+						charCounter=0;
+
+					}else{
+
+						buff[charCounter] = tmp;
+
+						charCounter++;
+
+					}
+
+					
+
+				}
+
+			}
+
+			shutdown(conn_sd,1); //mando EOF al client
+
+			shutdown(conn_sd,0);
+
+			close(conn_sd);
+
+
+
+			exit(0); //figlio termina
+
+		}	
+
+	}	
 
 	return 0;
 
