@@ -10,8 +10,7 @@ import java.net.Socket;
 public class ClientHandler extends Thread {
 	
 	//dichiarazione dimensione buffer
-	public static final String PATH_TO_OUTPUT="output\\";
-	public static final int BUFF_DIM_S=64000;
+	
 	private Socket socket;
 	private DataOutputStream fileWriter;
 	private DataInputStream sockReader;
@@ -43,7 +42,7 @@ public class ClientHandler extends Thread {
 		File file;
 		byte buffer[];
 		int readed=0;
-		buffer =new byte[BUFF_DIM_S];
+		buffer =new byte[ServerMultiplePut.BUFF_DIM_S];
 		
 		//algoritmica implementazione scambio file
 		try {
@@ -70,7 +69,7 @@ public class ClientHandler extends Thread {
 					System.out.println("file di nome "+fileName+" letto\n");
 					
 					//controllo esistenza file nel File System del servitore
-					if((file = new File(PATH_TO_OUTPUT+fileName.trim())).createNewFile()) {
+					if((file = new File(ServerMultiplePut.PATH_TO_OUTPUT+fileName.trim())).createNewFile()) {
 						
 						//richiesta file al cliente
 						System.out.println("richiedo file\n");

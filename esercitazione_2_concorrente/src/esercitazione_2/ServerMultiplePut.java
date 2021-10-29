@@ -1,25 +1,37 @@
 package esercitazione_2;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerMultiplePut {
 	
+	//dichiarazione parametri
+	public static String PATH_TO_OUTPUT="output\\";
+	public static int BUFF_DIM_S=64000;
+	public static int DEFAULT_PORT=50000;
+	
+	
 	//parametri di invocazione porta
 	public static void main(String args[]) {
 		
+		//server setup
+		serverSetup();
 		ServerSocket sv;
 		Socket socket;
 		ClientHandler ch;
 		int port=0;
 		
+		//controllo argomenti 
 		if(args.length>1)System.exit(1);
-		if (args.length==0)port=50000;
+		if (args.length==0)port=DEFAULT_PORT;
 		
 		else {
 			
-			//controllo argomenti 
+			
 			try {
 			
 				port= Integer.parseInt(args[0]); 
@@ -60,5 +72,29 @@ public class ServerMultiplePut {
 		
 		
 	}
+	
+	//metodo di setup server
+	private  static void serverSetup() {
+		
+		try {
+			
+			//lettura da file "settings\\settings.txt"
+			BufferedReader buffer =new BufferedReader(new FileReader("settings\\settings.txt"));
+			PATH_TO_OUTPUT=buffer.readLine().split(":")[1].trim();
+			BUFF_DIM_S=Integer.parseInt(buffer.readLine().split(":")[1].trim());
+			DEFAULT_PORT=Integer.parseInt(buffer.readLine().split(":")[1].trim());
+			buffer.close();
+		
+		} catch (FileNotFoundException e) {
+			
+			e.printStackTrace();
+		
+		} catch (IOException e) {
+		
+			e.printStackTrace();
+		
+		}
+	}
+	
 	
 }

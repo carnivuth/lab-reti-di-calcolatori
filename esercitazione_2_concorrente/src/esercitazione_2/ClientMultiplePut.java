@@ -15,14 +15,13 @@ import java.net.UnknownHostException;
 public class ClientMultiplePut {
 	
 	public static final int BUFF_DIM_C=64000;
-	public static final int DEFAULT_PORT=50000;
-	public static final int DEFAULT_MINIMUM_SIZE=0;
+	public static int DEFAULT_MINIMUM_SIZE=0;
 	
 	//parametri di invocazione ip_server [porta] [dimensione]
 	public static void main(String args[]) {
 		
 		int numFilesToSend=0;
-		int port=DEFAULT_PORT;
+		int port=50000;
 		File [] files;
 		byte buffer[];
 		String directory=null;
