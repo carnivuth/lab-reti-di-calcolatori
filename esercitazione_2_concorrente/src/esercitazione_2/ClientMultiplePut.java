@@ -30,6 +30,7 @@ public class ClientMultiplePut {
 		DataOutputStream sockWriter=null;
 		DataInputStream fileReader=null;
 		Socket socket = null;
+		int readed=0;
 		buffer =new byte[BUFF_DIM_C];
 		int minimumSize=DEFAULT_MINIMUM_SIZE;
 		
@@ -112,7 +113,8 @@ public class ClientMultiplePut {
 					if(files[i].length()>=minimumSize)numFilesToSend++;
 				
 				}
-				
+				//invio nome cartella target
+				sockWriter.writeUTF(new File(directory).getName().trim());
 				//invio numero di file directory
 				sockWriter.writeInt(numFilesToSend);
 				
@@ -137,9 +139,10 @@ public class ClientMultiplePut {
 							sockWriter.writeLong(files[i].length());							
 							
 							//ciclo di scrittura file su socket
-							while((fileReader.read(buffer))!=-1) {
+							readed=0;
+							while((readed=fileReader.read(buffer))!=-1) {
 								
-								sockWriter.write(buffer);
+								sockWriter.write(buffer,0,readed);
 								
 							}
 						
