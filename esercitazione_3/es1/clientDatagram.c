@@ -80,12 +80,13 @@ int main(int argc, char **argv)
 	//scanf_s restituisce il numero di valori letti
 	//se si inserisce EOF dovrebbe restiruire 0
 	while(scanf("%s", fileName)>0){
+
 		//invio il risultato
 		if(sendto(sd, fileName, sizeof(fileName), 0, (struct sockaddr *)&servaddr, lenServAddr)<0){
 			perror("sendto\n");
 			continue;
 		}
-		
+	
 		// ricezione del risultato
 		if (recvfrom(sd, &result, sizeof(result), 0, (struct sockaddr *)&servaddr, &lenServAddr)<0){
 			perror("recvfrom\n"); 

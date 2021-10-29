@@ -82,8 +82,8 @@ int main(int argc, char **argv){
                 if (buf==' ' || buf=='\n'){
                     if (result<tmp) {
                         result=tmp;
-                        tmp=0;
                     }
+					  tmp=0;
                 }
                 else tmp++;
             }
