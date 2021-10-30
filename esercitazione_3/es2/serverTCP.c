@@ -66,17 +66,14 @@ int main(int argc, char* argv[]){ //args: port
 	//gestisco i figli
 	signal(SIGCHLD, gestore);
 
-	char buff[256];
-	char nomeFile[256];
-	int riga, dim, pid;
+	int pid;
 	int curPort;
 	char curIp[256];
 	int len = sizeof(clientaddr); 
-	int conn_sd;
-	char tmp;
-	int lineCounter=0, charCounter=0;
+	
 	while(1){
-
+		int conn_sd;
+		
 		//arrivano: nomeFile, riga, dim, contenutoFile
 		if ((conn_sd=accept(listen_sd, (struct sockaddr*)&clientaddr, &len))<0){
 			if (errno==EINTR){
@@ -98,16 +95,21 @@ int main(int argc, char* argv[]){ //args: port
 				printf("Client servito: %s\n", clienthost->h_name);
 			}
 
-			close(0);
-			dup(conn_sd); //ridirezione input verso il client
+			char nomeFile[256];
+			int riga, dim;
+			char tmp;
+			//int lineCounter=0, charCounter;
+
+			//close(0);
+			//dup(conn_sd); //ridirezione input verso il client
 
 			//continuo l'esecuzione finche' ricevo il nome del file
 			while(recv(conn_sd, nomeFile, sizeof(nomeFile), 0)>0){
-				memset(buff,0,sizeof(buff));
-				int j=0;
+				char buff[256];
+				//memset(buff,0,sizeof(buff));
+				int charCounter=0;
+				int lineCounter=0;
 				
-				
-				charCounter=0;
 				//ricevo il file
 				printf("Ho ricevuto come file: %s\n", nomeFile);
 
@@ -122,9 +124,9 @@ int main(int argc, char* argv[]){ //args: port
 				int i=0;
 				while(i<dim){
 					printf("Inizio a leggere il file\n");
-					tmp = getchar();
-					i++;
-					printf("letto: %c\n", tmp);
+					//incremento i di quello che ho letto
+					i+=recv(conn_sd, &tmp, sizeof(tmp), 0);
+					
 					if (tmp == '\n'){
 						lineCounter++;
 						//chiudo la stringa e la invio
@@ -134,10 +136,17 @@ int main(int argc, char* argv[]){ //args: port
 						}
 						charCounter=0;
 					}else{
+						//salvo il carattere letto in un array
 						buff[charCounter] = tmp;
 						charCounter++;
 					}
 					
+				}
+				//metto una send anche qui cosi' mando anche l'ultima riga se non ha il terminatore finale
+				//incremento la linea e faccio un if cosi' non la mando se e' l'ultima linea
+				lineCounter++;
+				if(lineCounter != riga){
+					send(conn_sd, buff, charCounter, 0);
 				}
 			}
 			shutdown(conn_sd,1); //mando EOF al client
