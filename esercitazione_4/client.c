@@ -31,12 +31,13 @@ int main(int argc, char* argv[]){ //args: ipServer portServer
 		exit(3);
 	}
 
-	//inizializzazione address client e server
+	//inizializzazione address client
 	memset((char *)&clientaddr, 0, sizeof(clientaddr));
 	clientaddr.sin_family = AF_INET;
 	clientaddr.sin_port = 0;
 	clientaddr.sin_addr.s_addr = INADDR_ANY;
-
+	
+	//iniziializzazione address server
 	memset((char *)&serveraddr, 0, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = ((struct in_addr *)(host->h_addr))->s_addr;
@@ -52,10 +53,12 @@ int main(int argc, char* argv[]){ //args: ipServer portServer
 		perror("Errore binding\n");
 		exit(5);
 	}
-	if (connect(sd, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0){
-		perror("Errore connect\n");
-		exit(6);
-	}
+	
+	//PERCHE FAI LA CONNECT CON UNA SOCK DATAGRAM?????????
+	//if (connect(sd, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0){
+	//	perror("Errore connect\n");
+	//	exit(6);
+	//}
 	
 
 	//main loop
@@ -99,6 +102,7 @@ int main(int argc, char* argv[]){ //args: ipServer portServer
 */
 		memcpy(buff,nomeFile,strlen(nomeFile)+1);
 		memcpy(buff+strlen(nomeFile)+1, parola, strlen(parola)+1);
+		//inviare solo lunghezza esatta parola invece che tutto il buffer
 		write(sd, buff, 256);
 
 		//ricezione risultato
