@@ -8,27 +8,42 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-int main(int argc, char* argv[]){ //args: ipServer portServer
+//args: ipServer portServer
+int main(int argc, char* argv[]){ 
 
 	struct hostent *host;
 	struct sockaddr_in clientaddr, serveraddr;
+	
+	//valori di default LOCALHOST 50000
+	int port=50000;
+	host = gethostbyname("127.0.0.1");
 
 	//controllo argomenti
-	if (argc != 3){
+	if (argc != 3 && arc!=0){
+		
 		perror("Argomenti invalidi\n");
 		exit(1);
 	}
+	
+	//chiamata con parametri
+	if (arc==3){
+		
+		port = atoi(argv[2]);
+		
+		if (port < 1024 || port > 65535){
+			
+			perror("Porta invalida\n");
+			exit(2);
+		}
 
-	int port = atoi(argv[2]);
-	if (port < 1024 || port > 65535){
-		perror("Porta invalida\n");
-		exit(2);
-	}
-
-	host = gethostbyname(argv[1]);
-	if (host == NULL){
-		perror("Host invalido\n");
-		exit(3);
+		host = gethostbyname(argv[1]);
+		
+		if (host == NULL){
+		
+			perror("Host invalido\n");
+			exit(3);
+		}
+	
 	}
 
 	//inizializzazione address client
@@ -45,11 +60,15 @@ int main(int argc, char* argv[]){ //args: ipServer portServer
 
 	//creazione socket e settaggio socket
 	int sd = socket(AF_INET, SOCK_DGRAM, 0);
+	
 	if (sd < 0){
+	
 		perror("Errore creazione socket\n");
 		exit(4);
 	}
+	
 	if (bind(sd, (struct sockaddr *)&clientaddr, sizeof(clientaddr)) < 0){
+	
 		perror("Errore binding\n");
 		exit(5);
 	}
