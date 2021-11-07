@@ -236,7 +236,7 @@ int main(int argc, char * argv[]) { //args: port
                         buf[i] = '\0';
                         if (strcmp(parola, buf)) {
                             //parola diversa strcmp=1
-                            //inserisco il terminator nel buf e lo scrivo
+                            //inserisco il terminatore nel buf e lo scrivo
                             buf[i] = c;
                             write(fd2, buf, i + 1);
                             i = 0;
