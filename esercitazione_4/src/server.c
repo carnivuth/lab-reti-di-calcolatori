@@ -172,7 +172,7 @@ int main(int argc, char * argv[]) { //args: port
                             innerD = opendir(dirPath);
                             //ciclo finche' leggo file
                             while ((innerDir = readdir(innerD)) != NULL) {
-                                if (strcmp(innerDir -> d_name, ".") && strcmp(innerDir -> d_name, "..")) {
+                                if (strcmp(innerDir -> d_name, ".") && strcmp(innerDir -> d_name, "..") && strcmp(isfile(innerDir -> d_name))) {
                                     //printf("found: %s\n", innerDir -> d_name);
                                     write(conn_sd, innerDir -> d_name, 256);
                                 }
