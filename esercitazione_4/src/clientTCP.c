@@ -104,7 +104,7 @@ int main(int argc, char * argv[]) { //args: ipServ portServ
                 }
                 printf("Nome file: %s\n", buff);
 
-                //risetto la mascehra in ascolto sulla socket
+                //risetto la maschera in ascolto sulla socket
                 FD_SET(sd, & read_mask);
 
                 select(nfds, & read_mask, NULL, NULL, & time);
