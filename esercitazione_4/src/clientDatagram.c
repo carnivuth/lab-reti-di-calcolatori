@@ -18,6 +18,11 @@
 
 #define LINE_LENGTH 256
 
+typedef struct{
+    char fileName[LINE_LENGTH];
+    char parola[LINE_LENGTH];
+}pack;
+
 int main(int argc, char ** argv) {
     struct hostent * host;
     struct sockaddr_in clientaddr, servaddr;
@@ -100,15 +105,22 @@ int main(int argc, char ** argv) {
             continue;
         }
         printf("Invio fileName: %s parola: %s\n", fileName, parola);
+
         //invio il risultato
-        if (sendto(sd, fileName, sizeof(fileName), 0, (struct sockaddr * ) & servaddr, lenServAddr) < 0) {
+        char p[LINE_LENGTH*2];
+        bzero(p,sizeof(p));
+        strcat(p,fileName);
+        strcat(p,";");
+        strcat(p,parola);
+        printf("%s\n", p);
+        if (sendto(sd, p, sizeof(p), 0, (struct sockaddr * ) & servaddr, lenServAddr) < 0) {
             perror("sendto filename\n");
             continue;
         }
-        if (sendto(sd, parola, sizeof(parola), 0, (struct sockaddr * ) & servaddr, lenServAddr) < 0) {
+        /*if (sendto(sd, parola, sizeof(parola), 0, (struct sockaddr * ) & servaddr, lenServAddr) < 0) {
             perror("sendto parola\n");
             continue;
-        }
+        }*/
         // ricezione del risultato
         if (recvfrom(sd, & result, sizeof(result), 0, (struct sockaddr * ) & servaddr, & lenServAddr) < 0) {
             perror("recvfrom\n");

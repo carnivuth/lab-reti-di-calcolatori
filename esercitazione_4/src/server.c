@@ -14,6 +14,10 @@
 #include <sys/stat.h>
 
 #define LINE_LENGTH 256
+typedef struct{
+    char fileName[LINE_LENGTH];
+    char parola[LINE_LENGTH];
+}pack;
 
 int main(int argc, char * argv[]) { //args: port
 
@@ -197,28 +201,35 @@ int main(int argc, char * argv[]) { //args: port
                         printf("Servo UDP\n");
                         len = sizeof(struct sockaddr_in);
                         //ricevo il nome del file e parola da cercare
-                        if (recvfrom(udp_sd, fileName, sizeof(fileName), 0, (struct sockaddr * ) & cliaddr, & len) < 0) {
+                        char c[LINE_LENGTH*2];
+                        bzero(c,sizeof(c));
+                        if (recvfrom(udp_sd, c, sizeof(c), 0, (struct sockaddr * ) & cliaddr, & len) < 0) {
                                 perror("recvfrom filename \n");
                                 continue;
                         }
-                        if (recvfrom(udp_sd, parola, sizeof(parola), 0, (struct sockaddr * ) & cliaddr, & len) < 0) {
+                        ;
+                        /*if (recvfrom(udp_sd, parola, sizeof(parola), 0, (struct sockaddr * ) & cliaddr, & len) < 0) {
                                 perror("recvfrom parola \n");
                                 continue;
-                        }
+                        }*/
+                        char *f;
+                        char *p;
+                        f= strtok(c,";");
+                        p=strtok(NULL,";");
 
-                        printf("Ho ricevuto filename: %s e parola: %s\n", fileName, parola);
+                        printf("Ho ricevuto filename: %s e parola: %s\n", f, p);
 
                         //vedo se è una directory
-                        stat(fileName, & stats);
+                        stat(f, & stats);
                         if (S_ISDIR(stats.st_mode)) {
-                                printf("Il file %s è una cartella\n", fileName);
+                                printf("Il file %s è una cartella\n", f);
                                 result = -1;
                         }
 
                         if (result != -1) {
                                 //verifico l'esistenza del file
-                                if ((fd = open(fileName, O_RDONLY)) < 0) {
-                                        printf("Il file %s non esiste\n", fileName);
+                                if ((fd = open(f, O_RDONLY)) < 0) {
+                                        printf("Il file %s non esiste\n", f);
                                         result = -1;
                                 }
 
@@ -242,7 +253,7 @@ int main(int argc, char * argv[]) { //args: port
                                         if (c == ' ' || c == '\n') {
 
                                                 buf[i] = '\0';
-                                                if (strcmp(parola, buf)) {
+                                                if (strcmp(p, buf)) {
                                                         //parola diversa strcmp=1
                                                         //inserisco il terminatore nel buf e lo scrivo
                                                         buf[i] = c;
@@ -265,7 +276,7 @@ int main(int argc, char * argv[]) { //args: port
 
                                 //controllo cio' che e' rimasto nel buffer
                                 buf[i] = '\0';
-                                if (strcmp(parola, buf)) {
+                                if (strcmp(p, buf)) {
                                         //parola diversa strcmp=1
                                         write(fd2, buf, i);
                                         i = 0;
@@ -279,7 +290,7 @@ int main(int argc, char * argv[]) { //args: port
                                 close(fd2);
 
                                 //salvo le modifiche effettuate con una rinominazione del file
-                                if (rename("tmp.txt", fileName) == 0) {
+                                if (rename("tmp.txt", f) == 0) {
                                         printf("File aggiornato con successo\n");
                                 } else {
                                         printf("Il file NON e' stato aggiornato\n");
@@ -287,8 +298,8 @@ int main(int argc, char * argv[]) { //args: port
 
                         }
                         if (result == -1) {
-                                printf("Il file %s non esiste\n", fileName);
-                        } else printf("Il file %s esiste, il risultato e' %d\n", fileName, result);
+                                printf("Il file %s non esiste\n", f);
+                        } else printf("Il file %s esiste, il risultato e' %d\n", f, result);
 
                         //invio risposta
                         if (sendto(udp_sd, & result, sizeof(result), 0, (struct sockaddr * ) & cliaddr, len) < 0) {
