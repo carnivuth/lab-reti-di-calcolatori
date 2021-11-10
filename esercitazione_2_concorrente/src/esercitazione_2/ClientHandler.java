@@ -42,7 +42,7 @@ public class ClientHandler extends Thread {
 		File file;
 		byte buffer[]= new byte[ServerMultiplePut.BUFF_DIM_S];
 		int readed=0;
-		String directory="";
+	
 		
 		//algoritmica implementazione scambio file
 		try {
@@ -52,7 +52,7 @@ public class ClientHandler extends Thread {
 				System.out.println("leggo nome e numero file cartella\n");
 				
 				try {
-					directory= sockReader.readUTF();
+					
 					numFiles = sockReader.readInt();
 				
 				}catch(EOFException e) {
@@ -63,10 +63,6 @@ public class ClientHandler extends Thread {
 					return;
 				}
 				
-				try {
-				System.out.println(directory+(new File(directory.trim())).mkdir());
-				}catch(SecurityException e) {e.printStackTrace();}
-				
 				for(int i =0; i<numFiles;i++) {
 					
 					
@@ -74,7 +70,6 @@ public class ClientHandler extends Thread {
 					System.out.println("file di nome "+fileName+" letto\n");
 					
 					//controllo esistenza file nel File System del servitore
-					System.out.println(ServerMultiplePut.PATH_TO_OUTPUT+File.separator+directory+File.separator+fileName.trim());
 					if((file = new File(ServerMultiplePut.PATH_TO_OUTPUT+File.separator+fileName.trim())).createNewFile()) {
 						
 						//richiesta file al cliente

@@ -120,8 +120,7 @@ public class ClientMultiplePut {
 					if(files[i].length()>=minimumSize && !files[i].isDirectory())numFilesToSend++;
 				
 				}
-				//invio nome cartella target
-				sockWriter.writeUTF(new File(directory).getName().trim());
+				
 				//invio numero di file directory
 				sockWriter.writeInt(numFilesToSend);
 				
