@@ -5,6 +5,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -14,17 +16,21 @@ import java.net.UnknownHostException;
 
 public class ClientMultiplePut {
 	
-	public static final int BUFF_DIM_C=64000;
+	public static int BUFF_DIM_C=1;
 	public static int DEFAULT_MINIMUM_SIZE=0;
+	public static int DEFAULT_PORT_C=0;
+	public static String DEFAULT_SERVER_ADDRESS="";
 	
-	//parametri di invocazione ip_server [porta] [dimensione]
-	public static void main(String args[]) {
+	//parametri di invocazione [ip_server] [porta] [dimensione]
+	public static void main(String args[]) { 
 		
+		clientSetup();
 		int numFilesToSend=0;
-		int port=50000;
+		int port=DEFAULT_PORT_C;
 		File [] files;
 		byte buffer[];
 		String directory=null;
+		String address=null;
 		BufferedReader cl=new BufferedReader(new InputStreamReader(System.in));
 		DataInputStream sockReader=null;
 		DataOutputStream sockWriter=null;
@@ -34,21 +40,23 @@ public class ClientMultiplePut {
 		buffer =new byte[BUFF_DIM_C];
 		int minimumSize=DEFAULT_MINIMUM_SIZE;
 		
-
-		
-		//controllo il numero degli argomenti
+		//controllo argomenti e loro assegnazione (se presenti)
 		if(args.length>3){
-				System.err.println("Errore nell'inserimento delgi argomenti");
-				System.out.println("Usage: java ClientMultiplePut IP port minimumSize");
-				System.exit(1);
+		
+			System.err.println("Errore nell'inserimento delgi argomenti");
+			System.out.println("Usage: java ClientMultiplePut IP port minimumSize");
+			System.exit(1);
 		}
 		
-		if(args.length==3) {
+		if(args.length>=1){
 		
-			//conversione e controllo porta
+			address=args[0];
+		}
+		
+		if(args.length>=2){
+			
 			try {
-				
-				minimumSize=Integer.parseInt(args[2]);
+		
 				port= Integer.parseInt(args[1]); 
 				
 			}catch(NumberFormatException e) {
@@ -62,26 +70,25 @@ public class ClientMultiplePut {
 				System.err.println("errore: inserire porta valida");
 				System.exit(-1);
 			}
-			
-		}else if(args.length==3) {
-				
-			if (minimumSize<0) {
-				
-					System.err.println("errore: inserire dimensione valida");
-					System.exit(-1);
-				
-			}
-			
 		}
-			
-			
+		if(args.length==3) {
 
+			try {
+				
+				minimumSize=Integer.parseInt(args[2]);
+				
+			}catch(NumberFormatException e) {
+				
+				System.err.println("errore: inserire dimensione minima valida");
+				System.exit(-1);
+			}
+		}
 		
 		try {
 			
 			//creazione socket e estrazione stream di IO
 			socket = new Socket();
-			socket.connect(new InetSocketAddress(InetAddress.getByName(args[0]), port));
+			socket.connect(new InetSocketAddress(InetAddress.getByName(address), port));
 			sockReader=new DataInputStream(socket.getInputStream());
 			sockWriter=new DataOutputStream(socket.getOutputStream());
 		
@@ -167,5 +174,21 @@ public class ClientMultiplePut {
 		
 		
 	}
+	
+	//metodo di setup client
+		private  static void clientSetup() {
+			
+			try {
+				
+				//lettura da file "settings\\cSettings.txt"
+				BufferedReader buffer =new BufferedReader(new FileReader("settings\\cSettings.txt"));
+				DEFAULT_SERVER_ADDRESS=buffer.readLine().split(":")[1].trim();
+				BUFF_DIM_C=Integer.parseInt(buffer.readLine().split(":")[1].trim());
+				DEFAULT_PORT_C=Integer.parseInt(buffer.readLine().split(":")[1].trim());
+				DEFAULT_MINIMUM_SIZE=Integer.parseInt(buffer.readLine().split(":")[1].trim());
+				buffer.close();
+			
+			} catch (FileNotFoundException e) {} catch (IOException e) {}
+		}
 
 }

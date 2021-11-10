@@ -18,7 +18,7 @@ public class ClientHandler extends Thread {
 	
 	public ClientHandler(Socket socket) {
 		
-		this.socket=socket;
+		this.socket=socket; 
 		
 		try {
 			
@@ -123,5 +123,8 @@ public class ClientHandler extends Thread {
 		}
 		
 	}
+	
+	
+	
 	
 }

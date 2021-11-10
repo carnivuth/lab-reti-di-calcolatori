@@ -15,7 +15,7 @@ public class ServerMultiplePut {
 	public static int DEFAULT_PORT=50000;
 	
 	
-	//parametri di invocazione porta
+	//parametri di invocazione [porta]
 	public static void main(String args[]) {
 		
 		//server setup
@@ -23,17 +23,19 @@ public class ServerMultiplePut {
 		ServerSocket sv;
 		Socket socket;
 		ClientHandler ch;
-		int port=0;
+		int port=DEFAULT_PORT;
 		
-		//controllo argomenti 
-		if(args.length>1)System.exit(1);
-		if (args.length==0)port=DEFAULT_PORT;
-		
-		else {
+		//controllo argomenti e loro assegnazione (se presenti)
+		if(args.length>1){
 			
+			System.err.println("Errore nell'inserimento delgi argomenti");
+			System.out.println("Usage: java serverMultiplePut port");
+			System.exit(1);
+		}
+		if(args.length==1) {
 			
 			try {
-			
+				
 				port= Integer.parseInt(args[0]); 
 				
 			}catch(NumberFormatException e) {
@@ -48,7 +50,7 @@ public class ServerMultiplePut {
 				System.exit(-1);
 			}
 		}
-		
+	
 		try {
 			
 			sv=new ServerSocket(port);
@@ -78,22 +80,14 @@ public class ServerMultiplePut {
 		
 		try {
 			
-			//lettura da file "settings\\settings.txt"
-			BufferedReader buffer =new BufferedReader(new FileReader("settings\\settings.txt"));
+			//lettura da file "settings\\sSettings.txt"
+			BufferedReader buffer =new BufferedReader(new FileReader("settings\\sSettings.txt"));
 			PATH_TO_OUTPUT=buffer.readLine().split(":")[1].trim();
 			BUFF_DIM_S=Integer.parseInt(buffer.readLine().split(":")[1].trim());
 			DEFAULT_PORT=Integer.parseInt(buffer.readLine().split(":")[1].trim());
 			buffer.close();
 		
-		} catch (FileNotFoundException e) {
-			
-			e.printStackTrace();
-		
-		} catch (IOException e) {
-		
-			e.printStackTrace();
-		
-		}
+		} catch (FileNotFoundException e) {} catch (IOException e) {}
 	}
 	
 	
