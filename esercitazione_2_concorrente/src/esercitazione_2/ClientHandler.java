@@ -10,7 +10,7 @@ import java.net.Socket;
 public class ClientHandler extends Thread {
 	
 	//dichiarazione dimensione buffer
-	public static int BUFF_DIM_S=500;
+	
 	private Socket socket;
 	private DataOutputStream fileWriter;
 	private DataInputStream sockReader;
@@ -18,7 +18,7 @@ public class ClientHandler extends Thread {
 	
 	public ClientHandler(Socket socket) {
 		
-		this.socket=socket;
+		this.socket=socket; 
 		
 		try {
 			
@@ -40,19 +40,19 @@ public class ClientHandler extends Thread {
 		int numFiles=0;
 		String fileName;
 		File file;
-		byte buffer[];
+		byte buffer[]= new byte[ServerMultiplePut.BUFF_DIM_S];
 		int readed=0;
-		buffer =new byte[BUFF_DIM_S];
+		String directory="";
 		
 		//algoritmica implementazione scambio file
 		try {
 			
 			while(!socket.isInputShutdown()) {
 				
-				System.out.println("leggo numero file cartella\n");
+				System.out.println("leggo nome e numero file cartella\n");
 				
 				try {
-				
+					directory= sockReader.readUTF();
 					numFiles = sockReader.readInt();
 				
 				}catch(EOFException e) {
@@ -62,13 +62,20 @@ public class ClientHandler extends Thread {
 					socket.close();
 					return;
 				}
-				for(int i =0; i<numFiles;i++) {
 				
+				try {
+				System.out.println(directory+(new File(directory.trim())).mkdir());
+				}catch(SecurityException e) {e.printStackTrace();}
+				
+				for(int i =0; i<numFiles;i++) {
+					
+					
 					fileName = sockReader.readUTF();
 					System.out.println("file di nome "+fileName+" letto\n");
 					
 					//controllo esistenza file nel File System del servitore
-					if((file = new File(fileName.trim())).createNewFile()) {
+					System.out.println(ServerMultiplePut.PATH_TO_OUTPUT+File.separator+directory+File.separator+fileName.trim());
+					if((file = new File(ServerMultiplePut.PATH_TO_OUTPUT+File.separator+fileName.trim())).createNewFile()) {
 						
 						//richiesta file al cliente
 						System.out.println("richiedo file\n");
@@ -78,14 +85,18 @@ public class ClientHandler extends Thread {
 						
 						//ciclo di lettura/scrittura file
 						System.out.println("scrivo file "+fileName+" \n");
+						long timeStamp=System.currentTimeMillis();
+						
 						for(int j=0; j<fileLength;j+=readed) {
 							
-							readed=sockReader.read(buffer);
-							fileWriter.write(buffer);
+							readed=sockReader.read(buffer,0,(int)((fileLength-j>=ServerMultiplePut.BUFF_DIM_S)?ServerMultiplePut.BUFF_DIM_S:fileLength-j));
+							fileWriter.write(buffer,0,readed);
 							
 						}
 						
+						readed=0;
 						fileWriter.close();
+						System.out.println(System.currentTimeMillis()-timeStamp);
 						
 					}else {
 						
@@ -112,5 +123,8 @@ public class ClientHandler extends Thread {
 		}
 		
 	}
+	
+	
+	
 	
 }

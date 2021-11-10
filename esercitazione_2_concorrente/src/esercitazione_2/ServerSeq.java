@@ -17,7 +17,7 @@ public class ServerSeq {
 	public static final String PATH="./";
 	
 	public static void main(String[] args) {
-		int port=-1;
+		int port=-1; 
 		ServerSocket socket=null;
 		Socket clientSocket = null;
 		DataInputStream inSock = null;
