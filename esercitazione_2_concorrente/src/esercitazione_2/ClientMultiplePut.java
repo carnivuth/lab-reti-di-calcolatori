@@ -117,7 +117,7 @@ public class ClientMultiplePut {
 				
 				for (int i=0; i<files.length; i++){
 				
-					if(files[i].length()>=minimumSize)numFilesToSend++;
+					if(files[i].length()>=minimumSize && !files[i].isDirectory())numFilesToSend++;
 				
 				}
 				//invio nome cartella target
@@ -129,7 +129,7 @@ public class ClientMultiplePut {
 				//ciclo scrittura file directory 
 				for(int i =0; i<files.length;i++) {
 					
-					if(files[i].length()>=minimumSize) {
+					if(files[i].length()>=minimumSize && !files[i].isDirectory()) {
 					
 						//invio nome file a servitore 
 						System.out.println("invio nome file a servitore\n");
