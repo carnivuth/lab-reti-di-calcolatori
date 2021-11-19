@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteObject;
 
@@ -121,7 +122,25 @@ public class ServerImpl extends RemoteObject implements RemOp {
 				System.err.println("errore: inserire porta valida");
 				System.exit(-1);
 			}
+			
+			
+			
+			// Registrazione del servizio RMI
+			String completeNameCountRows = "//" +"localhost" + ":" + registryPort + "/" + "CountRows";
+			String completeNameDeleteRow = "//" +"localhost" + ":" + registryPort + "/" + "deleteRows";
+			try {
+				ServerImpl serverRMI = new ServerImpl();
+				Naming.rebind(completeNameCountRows, serverRMI);
+				Naming.rebind(completeNameDeleteRow, serverRMI);
+				
+			} catch (Exception e) {
+				
+				e.printStackTrace();
+				System.exit(1);
+			}
 		}
+		
+		
 
 	}
 }
