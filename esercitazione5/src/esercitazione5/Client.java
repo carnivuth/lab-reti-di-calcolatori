@@ -13,6 +13,7 @@ public class Client {
 			System.out.println("errore invocazione");
 			System.exit(-1);
 		}
+		
 		registryHost=args[0];
 		
 		if(args.length>1) {
