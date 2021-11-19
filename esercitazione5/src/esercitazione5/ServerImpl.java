@@ -14,6 +14,8 @@ import java.rmi.server.RemoteObject;
 
 public class ServerImpl extends RemoteObject implements RemOp {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public int conta_righe(String filename, int numWords) throws RemoteException {
 		
@@ -46,10 +48,11 @@ public class ServerImpl extends RemoteObject implements RemOp {
 	}
 
 	@Override
-	public int elimina_riga(String filename, int target) throws RemoteException {
+	public String elimina_riga(String filename, int target) throws RemoteException {
 		
 		File file =new File(filename);
 		File tmp =new File(filename+Thread.currentThread().getId()+".txt");
+		int index=0;
 		
 		//controllo su esistenza file
 		if(!file.exists() || !file.isFile())throw new RemoteException();
@@ -60,8 +63,7 @@ public class ServerImpl extends RemoteObject implements RemOp {
 			BufferedReader reader=new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 			PrintWriter pw=new PrintWriter(new OutputStreamWriter(new FileOutputStream(tmp)));
 			String row=null;
-			int index=0;
-			
+
 			//main loop
 			while((row=reader.readLine())!=null) {
 				
@@ -92,7 +94,7 @@ public class ServerImpl extends RemoteObject implements RemOp {
 		
 		
 		
-		return 0;
+		return index-1 + filename;
 	}
 
 	// parametri di invocazione [registryPort]
@@ -126,12 +128,10 @@ public class ServerImpl extends RemoteObject implements RemOp {
 			
 			
 			// Registrazione del servizio RMI
-			String completeNameCountRows = "//" +"localhost" + ":" + registryPort + "/" + "CountRows";
-			String completeNameDeleteRow = "//" +"localhost" + ":" + registryPort + "/" + "deleteRows";
+			String completeName = "//" +"localhost" + ":" + registryPort + "/" + "server";
 			try {
 				ServerImpl serverRMI = new ServerImpl();
-				Naming.rebind(completeNameCountRows, serverRMI);
-				Naming.rebind(completeNameDeleteRow, serverRMI);
+				Naming.rebind(completeName, serverRMI);
 				
 			} catch (Exception e) {
 				
