@@ -15,7 +15,50 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ServerImpl extends UnicastRemoteObject implements RemOp,Serializable {
+	
+	//struttura di gestione mutua esclusione
+	public static File files[] = new File[256];
+	public static boolean status[]= new boolean[256];
+	
+	//funzione di set status del file
+	public static synchronized void setStatusFile(File f,boolean s) {
 
+		int i=0;
+
+		for(i=0;i<files.length && files[i]!=null;i++) {
+		
+			if(files[i].getAbsolutePath().equals(f.getAbsolutePath())) {
+			
+				status[i]=s;
+				return;
+			}
+		}
+		//caso file non presente
+		files[i]=f;
+		status[i]=s;
+		
+	}
+	
+	//funzione di lettura status del file
+	public static synchronized boolean getStatusFile(File f) {
+
+		int i=0;
+
+		for(i=0;i<files.length && files[i]!=null;i++) {
+		
+			if(files[i].getAbsolutePath().equals(f.getAbsolutePath())) {
+			
+				return status[i];
+			}
+		}
+		//caso file non presente
+		files[i]=f;
+		status[i]=true;
+		return false;
+		
+	}
+	
+	
 	protected ServerImpl() throws RemoteException {
 		super();
 		
@@ -64,6 +107,10 @@ public class ServerImpl extends UnicastRemoteObject implements RemOp,Serializabl
 		//controllo su esistenza file
 		if(!file.exists() || !file.isFile())throw new RemoteException();
 		
+		//attesa attiva per mutua esclusione
+		while(!getStatusFile(file));
+		
+		
 		try {
 			
 			//apertura buffered reader 
@@ -86,15 +133,23 @@ public class ServerImpl extends UnicastRemoteObject implements RemOp,Serializabl
 			if(index<target) {
 				
 				tmp.delete();
+				//liberazione della risorsa nella struttura per la mutua esclusione
+				setStatusFile(file,false);
 				throw new RemoteException();
 			}
 			
 			//sostituzione file con file temporaneo
 			file.delete();
 			tmp.renameTo(new File(filename));
+			
+			//liberazione della risorsa nella struttura per la mutua esclusione
+			setStatusFile(new File(filename),false);
+			
 		
 		} catch (IOException e) {
 			
+			//liberazione della risorsa nella struttura per la mutua esclusione
+			setStatusFile(new File(filename),false);
 			e.printStackTrace();
 		}
 		
