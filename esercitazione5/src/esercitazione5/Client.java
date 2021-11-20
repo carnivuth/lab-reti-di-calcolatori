@@ -1,5 +1,6 @@
 package esercitazione5;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,7 +45,6 @@ public class Client {
 		
 		//tentativo di recupero servizio da registry
 		try {
-		
 			RemOp server =(RemOp)Naming.lookup("//" +registryHost + ":" + registryPort + "/" + "server");
 			String command=null;
 			String filename=null;
@@ -65,7 +65,7 @@ public class Client {
 					System.out.println("inserire nome file");
 					filename=in.readLine();
 					System.out.println("inserire numero minimo di parole");
-					numWords=in.read();
+					numWords=Integer.parseInt(in.readLine());
 					System.out.println(server.conta_righe(filename, numWords));
 				
 				//esecuzione di metodo remoto elimina riga
@@ -74,7 +74,7 @@ public class Client {
 					System.out.println("inserire nome file");
 					filename=in.readLine();
 					System.out.println("inserire numero di riga da eliminare");
-					row=in.read();
+					row=Integer.parseInt(in.readLine());
 					System.out.println(server.elimina_riga(filename, row));
 				
 				}

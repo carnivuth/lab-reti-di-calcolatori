@@ -1,5 +1,6 @@
 package esercitazione5;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,11 +9,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteObject;
+import java.rmi.server.UnicastRemoteObject;
 
-public class ServerImpl extends RemoteObject implements RemOp {
+public class ServerImpl extends UnicastRemoteObject implements RemOp,Serializable {
+
+	protected ServerImpl() throws RemoteException {
+		super();
+		
+	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -68,7 +75,7 @@ public class ServerImpl extends RemoteObject implements RemOp {
 			while((row=reader.readLine())!=null) {
 				
 				index++;
-				if(index!=target)pw.write(row);
+				if(index!=target)pw.write(row+System.lineSeparator());
 			}
 		
 			//chiusura reader writer
@@ -99,6 +106,8 @@ public class ServerImpl extends RemoteObject implements RemOp {
 
 	// parametri di invocazione [registryPort]
 	public static void main(String args[]) {
+		
+		System.out.println("avvio server");
 
 		int registryPort = 1099;
 
@@ -124,21 +133,22 @@ public class ServerImpl extends RemoteObject implements RemOp {
 				System.err.println("errore: inserire porta valida");
 				System.exit(-1);
 			}
-			
+		}
 			
 			
 			// Registrazione del servizio RMI
 			String completeName = "//" +"localhost" + ":" + registryPort + "/" + "server";
 			try {
-				ServerImpl serverRMI = new ServerImpl();
-				Naming.rebind(completeName, serverRMI);
 				
+				System.out.println(completeName);
+				ServerImpl serverRMI = new ServerImpl();
+				Naming.bind(completeName, serverRMI);
+				System.out.println("registrazione avvenuta con successo");
 			} catch (Exception e) {
 				
 				e.printStackTrace();
 				System.exit(1);
 			}
-		}
 		
 		
 
