@@ -108,7 +108,7 @@ public class ServerImpl extends UnicastRemoteObject implements RemOp,Serializabl
 		if(!file.exists() || !file.isFile())throw new RemoteException();
 		
 		//attesa attiva per mutua esclusione
-		while(!getStatusFile(file));
+		while(getStatusFile(file));
 		
 		
 		try {
