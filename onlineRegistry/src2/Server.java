@@ -1,4 +1,4 @@
-package esercitazione7;
+//package esercitazione7;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -22,15 +22,17 @@ public class Server implements EchoServer, Serializable{
 	}
 
 	
-	public static void main(String args[]) { //args: ipRegistry, portRegistry, nameRegistry, portService
+	public static void main(String args[]) { //args: ipRegistry, portRegistry, nameRegistry
 		
-		if (args.length != 4) {
+		if (args.length != 3) {
+			for(int i=0; i< 10; i++) {
+				if (args[i] != null) System.out.println("arg: " + args[i]);
+			}
 			System.err.println("Argomenti invalidi");
 			System.exit(1);
 		}
 		
 		String nomeCompletoRegistry = "//"+args[0]+":"+args[1]+"/"+args[2];
-		String nomeCompletoService = "//127.0.0.1:"+args[3]+"/echoServer";
 		System.out.println(nomeCompletoRegistry);
 		try {
 			System.out.println(InetAddress.getLocalHost().getHostAddress());
@@ -43,8 +45,6 @@ public class Server implements EchoServer, Serializable{
 			LocateRegistry.createRegistry(Integer.parseInt(args[3]));
 			RegistryRemotoTagServer remote = (RegistryRemotoTagServer) Naming.lookup(nomeCompletoRegistry);
 			Server echoServer = new Server();
-			System.setProperty("Java.rmi.server.hostname", "127.0.0.1");
-			Naming.rebind(nomeCompletoService, echoServer);
 			System.out.println("iniziando le operazioni");
 			if (remote.aggiungi("echoServer", echoServer)) System.out.println("aggiunto echoServer");
 			else System.out.println("non aggiunto server");

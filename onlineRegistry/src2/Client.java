@@ -9,7 +9,6 @@ public class Client {
 
 	public static void main(String[] args) { //args: ipRegistry portRegistry nameRegistry
 		
-		System.setProperty("Java.rmi.server.hostname", "127.0.0.1");
 		
 		if (args.length != 3) {
 			System.err.println("Argomenti invalidi");
