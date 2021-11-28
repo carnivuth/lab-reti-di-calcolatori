@@ -18,7 +18,8 @@ public class RegistryRemotoTagImpl extends UnicastRemoteObject implements Regist
 	Object [][] table = new Object[tableSize][2];
 	// primo elemento nome logico, secondo lista di tag
 	Object [][] tagsNames = new Object[tableSize][2];
-	
+	String [] tagDisponibili = {"echo","print","search","test1","test2","test3"};
+		
 	public RegistryRemotoTagImpl() throws RemoteException{
 		super();
 		for( int i=0; i<tableSize; i++ ){
@@ -36,7 +37,7 @@ public class RegistryRemotoTagImpl extends UnicastRemoteObject implements Regist
 		for( int i=0; i<tableSize; i++ ) {
 			if( nomeLogico.equals((String)table[i][0]) ){
 				risultato= (Remote) table[i][1];
-				break;
+				//break;
 			} 
 		}
 		return risultato;
@@ -160,19 +161,17 @@ public class RegistryRemotoTagImpl extends UnicastRemoteObject implements Regist
 	}
 
 	
-	public boolean associaTag(String nomeLogico, String tag) {
+	public synchronized boolean associaTag(String nomeLogico, String tag) throws RemoteException{
 		System.out.println("associa");
 		boolean done = false;
-	/*	for(int i=0; i<tableSize && !done; i++) {
-			System.out.println("table string " + ((String)tagsNames[i][0]));
-			if (tagsNames[i][0] != null && ((String)tagsNames[i][0]).equals(nomeLogico)) {
-				System.out.println("associando " + tag);
-				((ArrayList<String>) tagsNames[i][1]).add(tag);
-				System.out.println(((ArrayList<String>) tagsNames[i][1]).size());
-				done = true;
-			}
-		}*/
-			
+		boolean found = false;
+		for(int i=0; i<tagDisponibili.length; i++){
+		if(tagDisponibili[i].equals(tag))
+		found=true;
+		}
+		if(!found){
+		throw new RemoteException("Il tag non è disponibile");
+		}
 		for(int i=0; i<tableSize && !done; i++) {
 			System.out.println("table string " + ((String)tagsNames[i][0]));
 			if (tagsNames[i][0] != null && ((String)tagsNames[i][0]).equals(nomeLogico)) {

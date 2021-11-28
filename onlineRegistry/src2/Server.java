@@ -9,7 +9,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
-public class Server implements EchoServer, Serializable{
+public class Server implements EchoServer, Test1, Serializable{
 
 
 	private static final long serialVersionUID = 1L;
@@ -19,6 +19,10 @@ public class Server implements EchoServer, Serializable{
 
 	public String echo(String s) throws RemoteException {
 		return s;
+	}
+
+	public int test1() throws RemoteException {
+		return 1;
 	}
 
 	
@@ -42,14 +46,20 @@ public class Server implements EchoServer, Serializable{
 		}
 		
 		try {
-			LocateRegistry.createRegistry(Integer.parseInt(args[3]));
+			//LocateRegistry.createRegistry(Integer.parseInt(args[3]));
 			RegistryRemotoTagServer remote = (RegistryRemotoTagServer) Naming.lookup(nomeCompletoRegistry);
 			Server echoServer = new Server();
+			Server test1 = new Server();
 			System.out.println("iniziando le operazioni");
 			if (remote.aggiungi("echoServer", echoServer)) System.out.println("aggiunto echoServer");
 			else System.out.println("non aggiunto server");
 			if (remote.associaTag("echoServer", "echo")) System.out.println("aggiunto tag echo a echoServer");
 			else System.out.println("non aggiunto tag echo a echoServer");
+			System.out.println("iniziando le operazioni");
+			if (remote.aggiungi("test1", test1)) System.out.println("aggiunto test1");
+			else System.out.println("non aggiunto server");
+			if (remote.associaTag("test1", "test1")) System.out.println("aggiunto tag test1 a test1");
+			else System.out.println("non aggiunto tag test1 a test1");
 				
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
