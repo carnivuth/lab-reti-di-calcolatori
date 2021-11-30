@@ -150,11 +150,10 @@ public class RegistryRemotoTagImpl extends UnicastRemoteObject implements Regist
 				for (int j=0; j<TAG_SIZE; j++) {
 					if(( ((String[])tagsNames[i][1])[j] != null) && ((String[])tagsNames[i][1])[j].equals(tag)) {
 						res[nextFree] = (String)tagsNames[i][0];
+						nextFree++;
 					}
 				}
-				res[nextFree] = (String)tagsNames[i][0];
-				//System.out.println("found " + (String)tagsNames[i][0]);
-				nextFree++;
+				
 			}
 		}
 		return res;
@@ -170,7 +169,7 @@ public class RegistryRemotoTagImpl extends UnicastRemoteObject implements Regist
 		found=true;
 		}
 		if(!found){
-		throw new RemoteException("Il tag non è disponibile");
+		throw new RemoteException("Il tag non Ã¨ disponibile");
 		}
 		for(int i=0; i<tableSize && !done; i++) {
 			System.out.println("table string " + ((String)tagsNames[i][0]));
