@@ -2,11 +2,13 @@
 #include <rpc/rpc.h>
 #include "operazioni.h"
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     // struct chiamate remote
-    char contafile[256];
+    char *contafile= malloc(256);
     Dir_scan dirscan;
+    
+    char filename[256];
     Res *resconta;
     int *ris;
 
@@ -48,25 +50,28 @@ main(int argc, char *argv[])
                 clnt_perror(cl, server);
                 exit(1);
             }
-            if (resconta->first == NULL || resconta->first == NULL || resconta->first == NULL)
+            /*if (resconta->first == NULL || resconta->first == NULL || resconta->first == NULL)
             {
                 clnt_perror(cl, server);
                 exit(1);
-            }
+            }*/
             printf("Inseriti i valori: %d-%d-%d", resconta->first, resconta->second, resconta->third);
         }
         else if (procedure == 2)
         {
 
             printf("Inserisci il nome del file e dimensione");
-            scanf("%s", dirscan.filename);
-            scanf("%d", &dirscan.dimfile);
+            scanf("%s",filename);
+            dirscan.filename=filename;
+            scanf("%d", &((&(dirscan))->dimfile));
             ris = contadir_1(&dirscan, cl);
             if (ris == NULL)
             {
                 clnt_perror(cl, server);
                 exit(1);
             }
+            printf("risultato:%d\n",*ris);
+
         }
 
         printf("Inserisci procedura");
