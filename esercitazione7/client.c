@@ -72,20 +72,7 @@ main(int argc, char *argv[])
         printf("Inserisci procedura");
     }
 
-    ris = moltiplicazione_1(&op, cl);
-    /* errore RPC */ if (ris == NULL)
-    {
-        clnt_perror(cl, server);
-        exit(1);
-    }
-    /* errore risultato: assumiamo che non si possa ottenere 0 */
-    if (*ris == 0)
-    {
-        fprintf(stderr, "%s:...", argv[0], server);
-        exit(1);
-    }
-    printf("Risultato da %s: %i\n",
-           server, *ris);
+    
     // libero la risorsa gestore di trasporto
     clnt_destroy(cl);
 }
