@@ -61,7 +61,7 @@ main(int argc, char *argv[])
             printf("Inserisci il nome del file e dimensione");
             scanf("%s", dirscan.filename);
             scanf("%d", &dirscan.dimfile);
-            ris = contadir_1(dirscan, cl);
+            ris = contadir_1(&dirscan, cl);
             if (ris == NULL)
             {
                 clnt_perror(cl, server);
