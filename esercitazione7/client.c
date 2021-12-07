@@ -75,9 +75,6 @@ int main(int argc, char *argv[])
                 gets();
                 printf("Inserisci la dimensione minima\n");
             }
-           
-            
-            
             dirscan.filename=filename;
             
             ris = contadir_1(&dirscan, cl);
