@@ -18,7 +18,11 @@ Res *contafile_1_svc(char **nomefile, struct svc_req *rp)
     printf("nome file riceviuto: %s\n", *nomefile);
     
     //controllo esistenza del file
-    if((f=open(*nomefile,O_RDONLY))==-1)return NULL;
+    if((f=open(*nomefile,O_RDONLY))==-1){
+        
+        res.first=res.second=res.third=-1;
+        return (&res);
+    }
     
     //main cicle
     while(read(f,&c,1)>0){
@@ -45,7 +49,9 @@ int *contadir_1_svc(Dir_scan * dir, struct svc_req *rp)
     printf("Operandi ricevuti: %d e %s\n", dir->dimfile, dir->filename);
     
     //apertura directory
-    if((d=opendir(dir->filename))==NULL){ ris=-1;return &ris;}
+    if((d=opendir(dir->filename))==NULL){ 
+        ris=-1;
+        return &ris;}
     
     //main cicle
     while((dent=readdir(d))!=NULL){
