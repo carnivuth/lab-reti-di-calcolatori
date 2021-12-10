@@ -22,27 +22,23 @@ int main(int argc, char* argv[]){
 	while(scanf("%s", mode) == 1){
 		if (strcmp(mode, "c") == 0){
 			output = classifica_giudici_1(&voidinput,cl);
-			/*for (int i=0; i<256; i++){
-				printf("aaa\n");
-				if (output->giudici[i].nome != NULL){
-					printf("bbb\n");
+			for (int i=0; i<256; i++){
+				if (strcmp(output->giudici[i].nome, "NULL") != 0){
 					printf("Giudice: %s\n", output->giudici[i].nome);
 				}
-			}*/
+			}
 
 
 		}else if (strcmp(mode, "e") == 0){
 			printf("Aggiungere (a) o sottrarre (s)\n");
-			do{
-				scanf("%s", op);
-				if (op != NULL && (strcmp (op, "a") == 0 || strcmp(op, "s") == 0)){
-					printf("Inserisci candidato\n");
-					scanf("%s", nome);
-					strcpy(input.candidato, nome);
-					strcpy(input.op, op);
-					esprimi_voto_1(&input, cl);
-				}
-			}while(op == NULL || (strcmp(op,"a")!=0 && strcmp(op,"s")!=0)); 
+			scanf("%s", op);
+			if (op != NULL && (strcmp (op, "a") == 0 || strcmp(op, "s") == 0)){
+				printf("Inserisci candidato\n");
+				scanf("%s", nome);
+				strcpy(input.candidato, nome);
+				strcpy(input.op, op);
+				esprimi_voto_1(&input, cl);
+			}
 
 
 		}else{

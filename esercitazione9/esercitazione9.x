@@ -24,9 +24,12 @@ struct voidInput{
 	int a;
 };
 
+struct voidOutput{
+	int a;
+};
 program esercitazioneNove{
 	version SCANVERS{
 		Output classifica_giudici(voidInput) = 1;
-		void esprimi_voto(input_esprimi_voto) = 2;
+		voidOutput esprimi_voto(input_esprimi_voto) = 2;
 	}=1;
 }=0x20000022;

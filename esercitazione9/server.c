@@ -16,7 +16,7 @@ void inizializza(){
 	static int done = 0;
 	if (done == 1) return;
 	else{
-		done = 1:
+		done = 1;
 		for(int i=0; i<regSize; i++){
 			strcpy(reg[i].candidato, "L");
 			strcpy(reg[i].giudice, "L");
@@ -40,7 +40,7 @@ void inizializza(){
 		strcpy(reg[1].fase, "B");
 		reg[1].voto = 0;
 
-		strcpy(reg[2].candidato, "candidato2");
+		strcpy(reg[2].candidato, "candidato3");
 		strcpy(reg[2].giudice, "giudice2");
 		strcpy(reg[2].categoria, "O");
 		strcpy(reg[2].nomeFile, "/tmp/candidati/file3");
@@ -51,7 +51,8 @@ void inizializza(){
 
 }
 
-void scambia(int *a, int *b){ 
+void scambia(int *a, int *b){
+	printf("swapping %d, %d\n", *a, *b);
 	int temp;
 	temp = *a;
 	*a = *b;
@@ -59,17 +60,27 @@ void scambia(int *a, int *b){
 }
 
 void scambia2(char (*a)[30], char (*b)[30]){
-	char (*temp)[30];
-	temp = a;
-	a = b;
-	b = temp;
+	printf("swapping %s, %s\n",*a, *b);
+	char temp[30];
+	printf("AAAA\n");
+	strcpy(temp, *a);
+	//temp = a;
+	printf("BBBB\n");
+	strcpy(*a,*b);
+	//a = b;
+	printf("CCCCC\n");
+	strcpy(*b,temp);
+	//b = temp;
+	printf("DDDD\n");
+	printf("swapped %s, %s\n", *a, *b);
 }
 
 void sortGiudici(char (*giudici)[30], int voti[], int n){
+	printf("sorting %d elements\n", n);
 	int i, j;
 	for(i = 0; i < n - 1; i++) 
 		for (j = n - 1; j > i; j--) 
-		if (voti[j] < voti[j-1]){
+		if (voti[j] > voti[j-1]){
 			scambia(&(voti[j]),&(voti[j-1]));
 			scambia2(&(giudici[j]),&(giudici[j-1])); //va bene anche per string??
 		}
@@ -80,7 +91,7 @@ void sortGiudici(char (*giudici)[30], int voti[], int n){
 int indexOfGiudice(char* giudice, char (*giudici)[30]){
 	int index = -1;
 	for (int i=0; i<256; i++){
-		if (giudici[i] == NULL) break;
+		if (strcmp(giudici[i], "NULL") == 0) break;
 		if (strcmp(giudice, giudici[i]) == 0){
 			index = i;
 			break;
@@ -93,9 +104,12 @@ int indexOfGiudice(char* giudice, char (*giudici)[30]){
 int aggiungiGiudice (char* giudice, char (*giudici)[30]){
 	int index = -1;
 	for (int i=0; i<256; i++){
-		if (giudici[i] == NULL){
+		printf("AAA giudice: %s\n", giudici[i]);
+		if (strcmp(giudici[i], "NULL") == 0){
+			printf("posizione libera\n");
 			index = i;
 			strcpy(giudici[i], giudice);
+			break;
 		}
 	}
 
@@ -118,45 +132,69 @@ Output* classifica_giudici_1_svc(voidInput* a, struct svc_req* rq){
 	printf("bb\n");
 	static Output res;
 	char giudici[256][30];
+	for(int i=0; i<256; i++){
+		strcpy(giudici[i], "NULL");
+	}
 	int voti[256];
 	int nGiudici = 0;
 	int index, indexPlaced;
+
+	//creazione array paralleli non ordinati
 	for (int i=0; i<regSize; i++){
+		printf("record registro valido\n");
 		if (strcmp(reg[i].giudice, "L") == 0) break;
 		if ((index = indexOfGiudice(reg[i].giudice, giudici)) == -1){
 			indexPlaced = aggiungiGiudice(reg[i].giudice, giudici); //nella prima posizione libera
+			printf("aggiungendo il giudice %s all'indice%d\n", reg[i].giudice, indexPlaced);
 			voti[indexPlaced] = reg[indexPlaced].voto;
+			printf("voto: %d\n", voti[indexPlaced]);
 			nGiudici++;
 		}else{
 			voti[index] += reg[i].voto;
+			printf("voto: %d\n", voti[index]);
 		}
 	}
 
-	stampaRegistro(reg);
-
+	//stampaRegistro(reg);
+	for(int i=0; i<256; i++){
+		if (strcmp(giudici[i], "NULL") != 0){
+			printf("%s\n", giudici[i]);
+			printf("voto %d\n", voti[i]);
+		}
+	}
 	sortGiudici(giudici, voti, nGiudici);
-	for (int i=0; i<regSize; i++){
-		if (strcmp(reg[i].giudice, "L") == 0) break;
-		strcpy(res.giudici[i].nome, giudici[i]);	
+	for(int i=0; i<256; i++){
+		if (strcmp(giudici[i], "NULL") != 0){
+			printf("%s\n", giudici[i]);
+			printf("voto: %d\n", voti[i]);
+		}
 	}
 
-	stampaRegistro(reg);
+	//inizializzazione e compilazione output
+	for(int i=0; i<regSize; i++){
+		if (strcmp(giudici[i], "NULL") == 0){
+			strcpy(res.giudici[i].nome, "NULL");
+		}
+	}
+
+	for (int i=0; i<regSize; i++){
+		if (strcmp(giudici[i], "NULL") == 0) break;
+		printf("sending giudice: %s\n", giudici[i]);
+		strcpy(res.giudici[i].nome, giudici[i]);	
+	}
 
 	return &res;
 }
 
-void* esprimi_voto_1_svc(input_esprimi_voto* input, struct svc_req* rq){
-	
+voidOutput* esprimi_voto_1_svc(input_esprimi_voto* input, struct svc_req* rq){
+	inizializza();
+	static voidOutput res;
 	printf("Votazione tipo %s per %s\n", input->op, input->candidato);
 	printf("xxx\n");
 	if (strcmp(input->op, "a") == 0){
 		//aggiungi
-		printf("yyy\n");
 		for (int i=0; i<regSize; i++){
-			if (strcmp(reg[i].candidato, "L") == 0){
-				printf("Candidato non trovato\n");
-				break;
-			}
+			if (strcmp(reg[i].candidato, "L") == 0) break;
 			if (strcmp(reg[i].candidato, input->candidato) == 0){
 				printf("found\n");
 				reg[i].voto++;
@@ -167,17 +205,19 @@ void* esprimi_voto_1_svc(input_esprimi_voto* input, struct svc_req* rq){
 	}else{
 		//sottrai
 		for (int i=0; i<regSize; i++){
-			if (strcmp(reg[i].candidato, "L") == 0){
-				if (strcmp(reg[i].candidato, input->candidato) == 0){
-					reg[i].voto--;
-					printf("sottratto\n");
-				}
-			//strcpy(giudici[i], reg[i].giudice);
+			if (strcmp(reg[i].candidato, "L") == 0) break;
+			if (strcmp(reg[i].candidato, input->candidato) == 0){
+				printf("found\n");
+				reg[i].voto--;
+				printf("sottratto\n");
 			}
+
 		}
 
-	}
 
+	}
+	res.a = 0;
+	return &res;
 
 }
 
