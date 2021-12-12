@@ -204,8 +204,8 @@ Output* classifica_giudici_1_svc(void * a, struct svc_req* rq){
 	printf("xxx\n");
 	if (strcmp(input->op, "a") == 0){
 		//aggiungi
-		for (int i=0; i<regSize; i++){
-			if (strcmp(reg[i].candidato, "L") == 0) break;
+		for (int i=0; i<regSize && strcmp(reg[i].candidato, "L"); i++){
+			
 			if (strcmp(reg[i].candidato, input->candidato) == 0){
 				printf("found\n");
 				reg[i].voto++;
@@ -215,8 +215,8 @@ Output* classifica_giudici_1_svc(void * a, struct svc_req* rq){
 		}
 	}else{
 		//sottrai
-		for (int i=0; i<regSize; i++){
-			if (strcmp(reg[i].candidato, "L") == 0) break;
+		for (int i=0; i<regSize && strcmp(reg[i].candidato, "L"); i++){
+			
 			if (strcmp(reg[i].candidato, input->candidato) == 0){
 				printf("found\n");
 				reg[i].voto--;
