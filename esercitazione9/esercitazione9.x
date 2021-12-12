@@ -1,14 +1,14 @@
 struct registro{
-	char candidato [256];
-	char giudice [256];
-	char categoria [2];
-	char nomeFile [256];
-	char fase [256];
+	string candidato <256>;
+	string giudice <256>;
+	string categoria <2>;
+	string nomeFile <256>;
+	string fase <256>;
 	int voto;
 };
 
 struct giudice{
-	char nome[256];
+	string nome<256>;
 };
 
 struct Output{
@@ -16,8 +16,8 @@ struct Output{
 };
 
 struct input_esprimi_voto{
-	char candidato[256];
-	char op[2];
+	string candidato<256>;
+	string op<2>;
 };
 
 struct voidInput{
@@ -29,7 +29,7 @@ struct voidOutput{
 };
 program esercitazioneNove{
 	version SCANVERS{
-		Output classifica_giudici(voidInput) = 1;
-		voidOutput esprimi_voto(input_esprimi_voto) = 2;
+		Output classifica_giudici(void) = 1;
+		void esprimi_voto(input_esprimi_voto) = 2;
 	}=1;
 }=0x20000022;

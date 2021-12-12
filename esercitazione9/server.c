@@ -17,7 +17,16 @@ void inizializza(){
 	if (done == 1) return;
 	else{
 		done = 1;
+		printf("soprafor\n");
+
 		for(int i=0; i<regSize; i++){
+
+			printf("nelfor\n");
+			reg[i].candidato=malloc(256);
+			reg[i].giudice=malloc(256);
+			reg[i].categoria=malloc(256);
+			reg[i].nomeFile=malloc(256);
+			reg[i].fase=malloc(256);
 			strcpy(reg[i].candidato, "L");
 			strcpy(reg[i].giudice, "L");
 			strcpy(reg[i].categoria, "L");
@@ -126,11 +135,14 @@ void stampaRegistro(){
 	}
 }
 
-Output* classifica_giudici_1_svc(voidInput* a, struct svc_req* rq){
+Output* classifica_giudici_1_svc(void * a, struct svc_req* rq){
 	printf("aa\n");
 	inizializza();
 	printf("bb\n");
 	static Output res;
+	for(int i=0;i<256;i++){
+		res.giudici[i].nome=malloc(256);
+	}
 	char giudici[256][30];
 	for(int i=0; i<256; i++){
 		strcpy(giudici[i], "NULL");
@@ -153,7 +165,7 @@ Output* classifica_giudici_1_svc(voidInput* a, struct svc_req* rq){
 			voti[index] += reg[i].voto;
 			printf("voto: %d\n", voti[index]);
 		}
-	}
+			}
 
 	//stampaRegistro(reg);
 	for(int i=0; i<256; i++){
@@ -186,9 +198,8 @@ Output* classifica_giudici_1_svc(voidInput* a, struct svc_req* rq){
 	return &res;
 }
 
-voidOutput* esprimi_voto_1_svc(input_esprimi_voto* input, struct svc_req* rq){
+ void *  esprimi_voto_1_svc(input_esprimi_voto* input, struct svc_req* rq){
 	inizializza();
-	static voidOutput res;
 	printf("Votazione tipo %s per %s\n", input->op, input->candidato);
 	printf("xxx\n");
 	if (strcmp(input->op, "a") == 0){
@@ -216,8 +227,6 @@ voidOutput* esprimi_voto_1_svc(input_esprimi_voto* input, struct svc_req* rq){
 
 
 	}
-	res.a = 0;
-	return &res;
 
 }
 

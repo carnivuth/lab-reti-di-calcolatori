@@ -16,12 +16,18 @@ int main(int argc, char* argv[]){
 	char mode[10],op[10],nome[30];
 	Output* output;
 	input_esprimi_voto input;
-	voidInput voidinput; voidinput.a = 0;
+	input.candidato=malloc(256);
+	input.op=malloc(2);
 
 	printf("Classifica (c) o esprimi voto (e)\n");
 	while(scanf("%s", mode) == 1){
 		if (strcmp(mode, "c") == 0){
-			output = classifica_giudici_1(&voidinput,cl);
+			output = classifica_giudici_1((void *)NULL,cl);
+			if(output==NULL){
+				clnt_perror(cl, server);
+                exit(1);
+
+			}
 			for (int i=0; i<256; i++){
 				if (strcmp(output->giudici[i].nome, "NULL") != 0){
 					printf("Giudice: %s\n", output->giudici[i].nome);
@@ -48,7 +54,8 @@ int main(int argc, char* argv[]){
 
 	}
 
-
+	free(input.candidato);
+	free(input.op);
 	clnt_destroy(cl);
 
 
