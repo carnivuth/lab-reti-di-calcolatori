@@ -97,8 +97,16 @@ void sortGiudici(char (*giudici)[30], int voti[], int n){
 	for(i = 0; i < n - 1; i++) 
 		for (j = n - 1; j > i; j--) 
 		if (voti[j] > voti[j-1]){
-			scambia(&(voti[j]),&(voti[j-1]));
-			scambia2(&(giudici[j]),&(giudici[j-1])); //va bene anche per string??
+			int temp;
+			char temp2[30];
+			temp = *voto[j];
+			*voto[j] = *voto[j-1];
+			*voto[j-1] = temp;
+			strcpy(temp,giudici[j]);
+			strcpy(giudici[j],giudici[j-1]);
+			strcpy(giudici[j-1],temp);
+			//scambia(&(voti[j]),&(voti[j-1]));
+			//scambia2(&(giudici[j]),&(giudici[j-1])); //va bene anche per string??
 		}
 }
  
@@ -188,7 +196,24 @@ Output* classifica_giudici_1_svc(void * a, struct svc_req* rq){
 			printf("voto %d\n", voti[i]);
 		}
 	}
-	sortGiudici(giudici, voti, nGiudici);
+	//sortGiudici(giudici, voti, nGiudici);
+	int i, j;
+	for(i = 0; i < nGiudici - 1; i++){
+		for (j = nGiudici - 1; j > i; j--){
+		if (voti[j] > voti[j-1]){
+			int temp;
+			char temp2[30];
+			temp = *voti[j];
+			*voti[j] = *voti[j-1];
+			*voti[j-1] = temp;
+			strcpy(temp,giudici[j]);
+			strcpy(giudici[j],giudici[j-1]);
+			strcpy(giudici[j-1],temp);
+			//scambia(&(voti[j]),&(voti[j-1]));
+			//scambia2(&(giudici[j]),&(giudici[j-1])); //va bene anche per string??
+		}
+		}
+	}
 	for(int i=0; i<256; i++){
 		if (strcmp(giudici[i], "NULL") != 0){
 			printf("%s\n", giudici[i]);
