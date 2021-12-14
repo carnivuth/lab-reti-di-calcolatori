@@ -1,5 +1,6 @@
+
 #include <stdio.h>
-#include "esercitazione9.h"
+#include "fattore.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <dirent.h>
@@ -9,11 +10,21 @@
 
 #define regSize 256
 
+typedef struct {
+	char candidato [256];
+	char giudice [256];
+	char categoria [2];
+	char nomeFile [256];
+	char fase [256];
+	int voto;
+}registro;
+
 static registro reg[regSize];
 
 void inizializza(){
 	printf("init\n");
 	static int done = 0;
+
 	if (done == 1) return;
 	else{
 		done = 1;
@@ -22,11 +33,7 @@ void inizializza(){
 		for(int i=0; i<regSize; i++){
 
 			printf("nelfor\n");
-			reg[i].candidato=malloc(256);
-			reg[i].giudice=malloc(256);
-			reg[i].categoria=malloc(256);
-			reg[i].nomeFile=malloc(256);
-			reg[i].fase=malloc(256);
+			
 			strcpy(reg[i].candidato, "L");
 			strcpy(reg[i].giudice, "L");
 			strcpy(reg[i].categoria, "L");
@@ -140,13 +147,20 @@ Output* classifica_giudici_1_svc(void * a, struct svc_req* rq){
 	inizializza();
 	printf("bb\n");
 	static Output res;
-	for(int i=0;i<256;i++){
-		res.giudici[i].nome=malloc(256);
-	}
+
+    for (int i = 0; i < 256; i++)
+    {
+       memset(res.giudici[i].nome,'\0',7);
+    }
+    
+    
+    
+  
 	char giudici[256][30];
 	for(int i=0; i<256; i++){
 		strcpy(giudici[i], "NULL");
 	}
+
 	int voti[256];
 	int nGiudici = 0;
 	int index, indexPlaced;
@@ -229,8 +243,3 @@ Output* classifica_giudici_1_svc(void * a, struct svc_req* rq){
 	}
 
 }
-
-
-
-
-
