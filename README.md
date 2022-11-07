@@ -11,8 +11,8 @@ repository per i progetti di laboratorio di reti di calcolatori
 * esercizio con RPC in c
 ---
 ##  CREDITI
-* (carnivuth)[https://github.com/carnivuth]
-* (BlessedRebuS)[https://github.com/BlessedRebuS]
-* (Luca3700)[https://github.com/Luca3700]
-* (leonardobambini)[https://github.com/leonardobambini]
-* (Turixen)[https://github.com/Turixen]
+* [carnivuth](https://github.com/carnivuth)
+* [BlessedRebuS](https://github.com/BlessedRebuS)
+* [Luca3700](https://github.com/Luca3700)
+* [leonardobambini](https://github.com/leonardobambini)
+* [Turixen](https://github.com/Turixen)
